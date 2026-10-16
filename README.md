@@ -63,7 +63,15 @@ npm run format:check  # verify formatting without writing
 - **Rules beyond the ESLint parity set** are deliberate and listed here:
   `no-restricted-properties` rejects any `.reload()` call, so Client Components
   navigate with `useRouter().push()` instead of a full page reload — nothing in
-  the ESLint config covered `location.reload()`.
+  the ESLint config covered `location.reload()`. Seven more close gaps that set
+  left open: `typescript/no-floating-promises` (error) and
+  `typescript/no-misused-promises` (warn) catch unhandled promises,
+  `react/button-has-type` (error), `react/jsx-no-script-url` (error) and
+  `react/iframe-missing-sandbox` (warn) cover missing button types,
+  `javascript:` URLs and unsandboxed frames, and
+  `jsx-a11y/label-has-associated-control` (error) together with
+  `jsx-a11y/anchor-is-valid` (warn) cover form labels and real links. Each one
+  is fixture-verified on its own, and none of them flags this project's code.
 - **oxfmt replaced Prettier**, which this project never actually used.
   `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
   `.editorconfig` holds the 2-space indentation standard that both tools read.

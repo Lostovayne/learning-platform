@@ -49,6 +49,11 @@ S8. Scope discipline: a tooling migration must not change which checks run. Bund
 S9. Deliberate additions beyond the ESLint parity set, authorized one by one.
 
 - `no-restricted-properties` (error) rejects any `.reload()` call, so Client Components navigate with `useRouter().push()` instead of a full page reload. Nothing in the old ESLint config covered `location.reload()`.
+- `typescript/no-floating-promises` (error) and `typescript/no-misused-promises` (warn) reject unhandled promises: a promise created and dropped, an `async` function passed where a void return is expected, and a promise used as a boolean condition.
+- `react/button-has-type` (error) rejects a `<button>` with no explicit `type`, which defaults to `submit` inside a form.
+- `react/jsx-no-script-url` (error) rejects `javascript:` URLs in `href`, which React 19 disallows as a security precaution.
+- `react/iframe-missing-sandbox` (warn) rejects an `<iframe>` with no `sandbox` attribute.
+- `jsx-a11y/label-has-associated-control` (error) and `jsx-a11y/anchor-is-valid` (warn) reject a `<label>` with no control and an `<a>` with no `href` or a bad one.
 - Acceptance: every addition is recorded in the config header and in the README, and each one is verified with a fixture that produces no finding before the addition and the expected finding after it.
 
 ## Tasks
@@ -58,9 +63,10 @@ S9. Deliberate additions beyond the ESLint parity set, authorized one by one.
 | T1  | S2             | inline | `oxfmt` installed, `.oxfmtrc.json`, `format` / `format:check` scripts, README section                                                                                                   | done   | `3192625` |
 | T2  | S3, S4, S6, S8 | inline | ESLint removed, `oxlint` installed, tool-generated `.oxlintrc.json`, `lint` / `lint:fix` scripts                                                                                        | done   | `9ea2530` |
 | T3  | S5             | inline | Accepted-loss record in the config header and README                                                                                                                                    | done   | `9ea2530` |
-| T4  | S8, S9         | inline | Coverage-gap closure: `typescript/*` aliases, `typescript/no-deprecated` behind `options.typeAware`, `oxlint-tsgolint` devDependency, `.reload()` guard, config header + README updated | done   | `pending` |
+| T4  | S8, S9         | inline | Coverage-gap closure: `typescript/*` aliases, `typescript/no-deprecated` behind `options.typeAware`, `oxlint-tsgolint` devDependency, `.reload()` guard, config header + README updated | done   | `e4ad884` |
+| T5  | S9             | inline | Seven deliberate rules at the agreed severities, fixture-verified, config header + README updated                                                                                       | done   | `pending` |
 
-Risk: T2 touches high-risk item 5 (dependencies and the project's lint environment).
+Risk: T2 and T4 touch high-risk item 5 (dependencies and the project's lint environment); T5 adds rules to that gate, where no committed test would catch a rule silently disappearing (item 6), so its evidence is the fixture differential recorded in L17 and L18.
 
 ## Log
 
@@ -117,3 +123,5 @@ L15 (state check, before continuing): `git status` showed the coverage-gap work 
 L16 (user request, verbatim): "agrega esas que me recomendaste mas la 7 y la 2". Resolved against the recommendation list shown before it: (1) `typescript/no-floating-promises`, (2) `typescript/no-misused-promises`, (3) `react/button-has-type`, (4) `react/jsx-no-script-url`, (5) `react/iframe-missing-sandbox`, (6) `jsx-a11y/label-has-associated-control`, (7) `jsx-a11y/anchor-is-valid`, at error/warn/error/error/warn/error/warn. The eighth candidate, `jsx-a11y/click-events-have-key-events`, was declined: at error severity it fails `npm run lint` on this project's current UI code.
 
 L17 (evidence, T4): `npx oxlint` over fixtures outside the workspace reports `eslint(no-restricted-properties)` for all four `.reload()` spellings and `typescript(no-deprecated)`; the three `typescript/*` extension rules run under those names, and `npm run lint` plus `npm run format:check` exit 0.
+
+L18 (evidence, T5): the two fixtures produce nothing at all against the pre-addition config (RED, exit 0), and the expected findings against the current one: `typescript(no-floating-promises)` error on a bare call, `typescript(no-misused-promises)` warning in a void callback and in a boolean condition, `react(button-has-type)` error, `react(jsx-no-script-url)` error, `react(iframe-missing-sandbox)` warning, `jsx-a11y(label-has-associated-control)` error and `jsx-a11y(anchor-is-valid)` warning twice. `npm run lint` and `npm run format:check` still exit 0 on the project's own code, so no rule needed a source change. All seven rule names were validity probes first: the 1.88.0 config parser accepts each one.
