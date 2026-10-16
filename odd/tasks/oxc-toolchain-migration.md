@@ -71,7 +71,7 @@ S10. A committed regression guard for the deliberate rules. Nothing else in the 
 | T4  | S8, S9         | inline | Coverage-gap closure: `typescript/*` aliases, `typescript/no-deprecated` behind `options.typeAware`, `oxlint-tsgolint` devDependency, `.reload()` guard, config header + README updated | done   | `e4ad884` |
 | T5  | S9             | inline | Seven deliberate rules at the agreed severities, fixture-verified, config header + README updated                                                                                       | done   | `26fead8` |
 
-| T6 | S10 | inline | `scripts/lint-rules-regression.mjs` plus the `test:lint` script, README updated | done | `pending` |
+| T6 | S10 | inline | `scripts/lint-rules-regression.mjs` plus the `test:lint` script, README updated | done | `449d425` |
 
 Risk: T2 and T4 touch high-risk item 5 (dependencies and the project's lint environment); T5 adds rules to that gate, where no committed test would catch a rule silently disappearing (item 6), so its evidence is the fixture differential recorded in L17 and L18. T6 closes that exposure with a committed guard, and it is additive: a new npm script, no existing command changes.
 
