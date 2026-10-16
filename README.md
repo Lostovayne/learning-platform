@@ -37,6 +37,7 @@ from the same family of tools and neither needs a plugin stack to install.
 ```bash
 npm run lint          # oxlint -- the linter
 npm run lint:fix      # oxlint --fix
+npm run test:lint     # guard the deliberate rules against a fixture that must fail them
 npm run format        # oxfmt -- the formatter
 npm run format:check  # verify formatting without writing
 ```
@@ -72,7 +73,14 @@ npm run format:check  # verify formatting without writing
   `jsx-a11y/label-has-associated-control` (error) together with
   `jsx-a11y/anchor-is-valid` (warn) cover form labels and real links. Each one
   is fixture-verified on its own, and none of them flags this project's code.
+- **`npm run test:lint` guards those deliberate rules.** It lints a fixture
+  written outside the repo that has to fail every one of them, so a rule
+  disappearing silently from `.oxlintrc.json` fails the check instead of passing
+  unnoticed. The project still has no application test runner; this script is
+  the only committed test until one arrives.
 - **oxfmt replaced Prettier**, which this project never actually used.
+  `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
+  `.editorconfig` holds the 2-space indentation standard that both tools read.
   `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
   `.editorconfig` holds the 2-space indentation standard that both tools read.
 - Vendored skill content and generated artifacts (`.agents/**`, `agent/**`,

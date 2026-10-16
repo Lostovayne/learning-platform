@@ -56,6 +56,11 @@ S9. Deliberate additions beyond the ESLint parity set, authorized one by one.
 - `jsx-a11y/label-has-associated-control` (error) and `jsx-a11y/anchor-is-valid` (warn) reject a `<label>` with no control and an `<a>` with no `href` or a bad one.
 - Acceptance: every addition is recorded in the config header and in the README, and each one is verified with a fixture that produces no finding before the addition and the expected finding after it.
 
+S10. A committed regression guard for the deliberate rules. Nothing else in the repo would notice one of them disappearing from `.oxlintrc.json`, which is the item 6 exposure named in the Risk line.
+
+- Deliverable: `scripts/lint-rules-regression.mjs` plus the `npm run test:lint` script. It lints a fixture written to a temporary directory outside the repo, asserts the nine expected findings (the eight S9 rules plus the type-aware `react/no-deprecated` recovery), takes an optional config path so its RED state is reproducible, and deletes its scratch directory.
+- Acceptance: exit 0 against `.oxlintrc.json`, exit 1 against the config of the baseline commit, and no scratch directory left behind.
+
 ## Tasks
 
 | ID  | Specs          | Route  | Deliverable                                                                                                                                                                             | Status | Evidence  |
@@ -66,7 +71,9 @@ S9. Deliberate additions beyond the ESLint parity set, authorized one by one.
 | T4  | S8, S9         | inline | Coverage-gap closure: `typescript/*` aliases, `typescript/no-deprecated` behind `options.typeAware`, `oxlint-tsgolint` devDependency, `.reload()` guard, config header + README updated | done   | `e4ad884` |
 | T5  | S9             | inline | Seven deliberate rules at the agreed severities, fixture-verified, config header + README updated                                                                                       | done   | `26fead8` |
 
-Risk: T2 and T4 touch high-risk item 5 (dependencies and the project's lint environment); T5 adds rules to that gate, where no committed test would catch a rule silently disappearing (item 6), so its evidence is the fixture differential recorded in L17 and L18.
+| T6 | S10 | inline | `scripts/lint-rules-regression.mjs` plus the `test:lint` script, README updated | done | `pending` |
+
+Risk: T2 and T4 touch high-risk item 5 (dependencies and the project's lint environment); T5 adds rules to that gate, where no committed test would catch a rule silently disappearing (item 6), so its evidence is the fixture differential recorded in L17 and L18. T6 closes that exposure with a committed guard, and it is additive: a new npm script, no existing command changes.
 
 ## Log
 
@@ -131,3 +138,7 @@ L19 (independent verification, `5e6ed1e`..`26fead8`): verdict S7 met, S8 met, S9
 L20 (RDD, this slice): `gentle-ai review assess --base-ref 3192625 --committed-only` returned risk `medium` (`configuration_change` on `.oxlintrc.json`) with `review_due` false and `review_due_reason` `under_budget`, so no native review is owed yet and the boundary stays at `3192625`, exactly as for T2 in L13.
 
 L21 (open, not authorized): the verifier proposed committing its probe as `scripts/lint-rules-regression.mjs` plus a `test:lint` npm script, since nothing in the repo would catch a deliberate rule silently disappearing (the item 6 exposure named in the Risk line). Not added: the project still has no test runner and neither the script nor the npm entry was requested.
+
+L22 (user authorization, verbatim): "agregalos en un commit todo eso que quedo de los scripts y test:lint , mas adelante veremos tdd y algunas cosas mas asi que ahi usaremos bastantes tests". The proposal left open in L21 is therefore authorized and lands as T6, with more test infrastructure expected later once TDD is decided.
+
+L23 (evidence, T6): the guard runs both ways as a plain `node scripts/lint-rules-regression.mjs <config>`: against the baseline config (`git show 5e6ed1e:.oxlintrc.json`) it reports "9 of 9 expected findings are missing" and exits 1, and against the current `.oxlintrc.json` it reports all nine and exits 0. The nine are the eight deliberate rules plus the type-aware `react/no-deprecated` recovery. It writes its fixture to a `mkdtemp` directory outside the repo and deletes it, leaving nothing behind. `npm run test:lint` wires it into the project scripts and the README lists it.

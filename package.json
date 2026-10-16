@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
+    "test:lint": "node scripts/lint-rules-regression.mjs",
     "format": "oxfmt",
     "format:check": "oxfmt --check"
   },
