@@ -46,18 +46,24 @@ npm run format:check  # verify formatting without writing
   (`npx @oxlint/migrate eslint.config.mjs --with-nursery`). `eslint.config.mjs`
   and the `eslint` / `eslint-config-next` dependencies are gone.
 - **The rule set stays at 1:1 parity with ESLint.** The old setup resolved 113
-  rules, 86 of them active (60 errors, 26 warnings); oxlint enforces 80 of those
-  86, and 6 could not be migrated. `"categories": { "correctness": "off" }` stops
+  rules, 86 of them active (60 errors, 26 warnings); oxlint enforces 81 of those
+  86, and 5 could not be migrated. `"categories": { "correctness": "off" }` stops
   oxlint from adding its own defaults, so `npm run lint` reports exactly what
   ESLint used to report. Remove that line to also enable oxlint's built-in
   `correctness` baseline.
-- **Six ESLint rules had no oxlint equivalent** and are no longer enforced:
-  `nextjs/no-location-assign-relative-destination` (not implemented),
-  `react/no-deprecated` (covered by `typescript/no-deprecated` under
-  `--type-aware`), `react/jsx-uses-react` and `react/jsx-uses-vars` (obsolete
-  with the React 17+ JSX transform, the latter covered by `no-unused-vars`), and
-  the React Compiler rules `react-hooks/config` and `react-hooks/gating`. They
-  are recorded in a comment at the top of `.oxlintrc.json`.
+- **Five ESLint rules had no oxlint equivalent** and are no longer enforced:
+  `nextjs/no-location-assign-relative-destination` (not implemented upstream,
+  `oxc-project/oxc` #26301 is open), `react/jsx-uses-react` and
+  `react/jsx-uses-vars` (obsolete with the React 17+ JSX transform, the latter
+  covered by `no-unused-vars`), and the React Compiler rules
+  `react-hooks/config` and `react-hooks/gating`. `react/no-deprecated` is not
+  lost: it runs as `typescript/no-deprecated`, its type-aware equivalent, which
+  is why `options.typeAware` is on and `oxlint-tsgolint` is a devDependency. The
+  details live in a comment at the top of `.oxlintrc.json`.
+- **Rules beyond the ESLint parity set** are deliberate and listed here:
+  `no-restricted-properties` rejects any `.reload()` call, so Client Components
+  navigate with `useRouter().push()` instead of a full page reload — nothing in
+  the ESLint config covered `location.reload()`.
 - **oxfmt replaced Prettier**, which this project never actually used.
   `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
   `.editorconfig` holds the 2-space indentation standard that both tools read.

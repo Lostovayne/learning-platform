@@ -10,18 +10,37 @@
 // entry also switches on oxlint's own "correctness" baseline.
 //
 // The old ESLint setup resolved 113 rules, 86 of them active (60 error,
-// 26 warn). Of those 86, 80 were migrated here and 6 could not be, listed
+// 26 warn). 81 of those 86 are enforced here; the 5 that are not are listed
 // below. Rules the ESLint setup left "off" are kept "off" here.
 //
-// Rules ESLint enforced that could not be migrated (6):
-//   @next/next/no-location-assign-relative-destination  not implemented in oxlint
+// Rules ESLint enforced with no oxlint implementation (5):
+//   @next/next/no-location-assign-relative-destination  not implemented in
+//       oxlint yet (oxc-project/oxc #26301 is open): flags location.href =
+//       '/route' and location.assign('/route') so router.push() is used
 //   react/jsx-uses-react   unnecessary with the React 17+ JSX transform
-//   react/jsx-uses-vars    covered by eslint/no-unused-vars, which already
-//                          counts JSX usage
-//   react/no-deprecated    covered by typescript/no-deprecated when oxlint runs
-//                          with --type-aware (needs oxlint-tsgolint)
+//   react/jsx-uses-vars    covered by typescript/no-unused-vars, which counts
+//                          JSX usage (fixture-verified)
 //   react-hooks/config     React Compiler options are not configurable in oxlint
 //   react-hooks/gating     React Compiler gating is not configurable in oxlint
+//
+// react/no-deprecated (error) is enforced as typescript/no-deprecated, the
+// type-aware equivalent, which is why "options.typeAware" is on and
+// oxlint-tsgolint is a devDependency.
+//
+// Deliberate addition beyond the ESLint parity set: no-restricted-properties
+// rejects any `.reload()` call so Client Components navigate with
+// useRouter().push() instead of a full page reload. No rule in the old ESLint
+// config covered location.reload(). It is configured in property-only mode on
+// purpose: oxlint matches the immediate object identifier only, so
+// { "object": "location" } would miss window.location.reload() and friends
+// (upstream ESLint does support nested object paths). If a non-location API
+// with a .reload() method appears, add its object to allowObjects.
+//
+// The three @typescript-eslint rules (@typescript-eslint/no-array-constructor,
+// no-unused-expressions, no-unused-vars) run under their typescript/* names,
+// which is what ESLint actually enforced: the eslint/* twins were "off". oxlint
+// implements those three as aliases of the eslint/* rules, so diagnostics are
+// still labelled eslint(...); the config name is what documents the parity.
 //
 // react/require-render-return is an oxlint "nursery" (experimental) rule. It is
 // kept here for parity with the ESLint config.
@@ -31,6 +50,9 @@
 
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": {
+    "typeAware": true
+  },
   "plugins": ["nextjs", "typescript"],
   "categories": {
     "correctness": "off"
@@ -48,9 +70,13 @@
     ".atl/**"
   ],
   "rules": {
-    "no-array-constructor": "error",
-    "no-unused-expressions": "warn",
-    "no-unused-vars": "warn",
+    "no-restricted-properties": [
+      "error",
+      {
+        "property": "reload",
+        "message": "Avoid full page reloads: Client Components navigate with useRouter().push() from next/navigation."
+      }
+    ],
     "nextjs/google-font-display": "warn",
     "nextjs/google-font-preconnect": "warn",
     "nextjs/next-script-for-ga": "warn",
@@ -73,6 +99,8 @@
     "nextjs/no-head-import-in-document": "error",
     "nextjs/no-script-component-in-head": "error",
     "typescript/ban-ts-comment": "error",
+    "typescript/no-array-constructor": "error",
+    "typescript/no-deprecated": "error",
     "typescript/no-duplicate-enum-values": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
@@ -85,6 +113,8 @@
     "typescript/no-unnecessary-type-constraint": "error",
     "typescript/no-unsafe-declaration-merging": "error",
     "typescript/no-unsafe-function-type": "error",
+    "typescript/no-unused-expressions": "warn",
+    "typescript/no-unused-vars": "warn",
     "typescript/no-wrapper-object-types": "error",
     "typescript/prefer-as-const": "error",
     "typescript/prefer-namespace-keyword": "error",

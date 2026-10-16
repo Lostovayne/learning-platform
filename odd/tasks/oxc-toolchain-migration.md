@@ -44,15 +44,21 @@ S7. `npm run lint` exits 0 on the current codebase, and `npm run format:check` p
 
 S8. Scope discipline: a tooling migration must not change which checks run. Bundling extra rules into it would make unrelated future edits fail lint for reasons the author never enabled.
 
-- Acceptance: no rule is active in oxlint that was not active in ESLint.
+- Acceptance: no rule is active in oxlint that was not active in ESLint, except the deliberate additions enumerated in S9.
+
+S9. Deliberate additions beyond the ESLint parity set, authorized one by one.
+
+- `no-restricted-properties` (error) rejects any `.reload()` call, so Client Components navigate with `useRouter().push()` instead of a full page reload. Nothing in the old ESLint config covered `location.reload()`.
+- Acceptance: every addition is recorded in the config header and in the README, and each one is verified with a fixture that produces no finding before the addition and the expected finding after it.
 
 ## Tasks
 
-| ID  | Specs          | Route  | Deliverable                                                                                      | Status | Evidence  |
-| --- | -------------- | ------ | ------------------------------------------------------------------------------------------------ | ------ | --------- |
-| T1  | S2             | inline | `oxfmt` installed, `.oxfmtrc.json`, `format` / `format:check` scripts, README section            | done   | `3192625` |
-| T2  | S3, S4, S6, S8 | inline | ESLint removed, `oxlint` installed, tool-generated `.oxlintrc.json`, `lint` / `lint:fix` scripts | done   | `9ea2530` |
-| T3  | S5             | inline | Accepted-loss record in the config header and README                                             | done   | `9ea2530` |
+| ID  | Specs          | Route  | Deliverable                                                                                                                                                                             | Status | Evidence  |
+| --- | -------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | --------- |
+| T1  | S2             | inline | `oxfmt` installed, `.oxfmtrc.json`, `format` / `format:check` scripts, README section                                                                                                   | done   | `3192625` |
+| T2  | S3, S4, S6, S8 | inline | ESLint removed, `oxlint` installed, tool-generated `.oxlintrc.json`, `lint` / `lint:fix` scripts                                                                                        | done   | `9ea2530` |
+| T3  | S5             | inline | Accepted-loss record in the config header and README                                                                                                                                    | done   | `9ea2530` |
+| T4  | S8, S9         | inline | Coverage-gap closure: `typescript/*` aliases, `typescript/no-deprecated` behind `options.typeAware`, `oxlint-tsgolint` devDependency, `.reload()` guard, config header + README updated | done   | `pending` |
 
 Risk: T2 touches high-risk item 5 (dependencies and the project's lint environment).
 
@@ -105,3 +111,9 @@ L12 (open, not blocking): the redundant `agent/skills/` copy (byte-identical to 
 L13 (RDD, T2 slice): `gentle-ai review assess` over base `3192625` returned risk `medium` (`configuration_change` on `.oxlintrc.json`), `review_due` false, `review_due_reason` `under_budget`. No native review is owed for this slice yet. Re-checked because the first call reported `unassessable`/`high` while the tree was clean, which is what assessing an already-committed change without naming its base looks like.
 
 L14 (defect found by independent verification, fixed): the rewritten Tasks table was not aligned the way `oxfmt` formats markdown, so `npm run format:check` failed on this document even though `npm run lint` passed. The author's own checks missed it because the table was rewritten after the last `format:check` run, and the S7 line in L10 still claimed a pass. Fixed with `npx oxfmt odd/tasks/oxc-toolchain-migration.md`; both gates exit 0 again.
+
+L15 (state check, before continuing): `git status` showed the coverage-gap work of this session still uncommitted (`.oxlintrc.json`, `package.json`, `package-lock.json`) with HEAD at `5e6ed1e`. No commit held that work — the `e63db28` this session had reported does not resolve as a git object — so it is landed here as its own slice (T4), never mixed into the new-rule work.
+
+L16 (user request, verbatim): "agrega esas que me recomendaste mas la 7 y la 2". Resolved against the recommendation list shown before it: (1) `typescript/no-floating-promises`, (2) `typescript/no-misused-promises`, (3) `react/button-has-type`, (4) `react/jsx-no-script-url`, (5) `react/iframe-missing-sandbox`, (6) `jsx-a11y/label-has-associated-control`, (7) `jsx-a11y/anchor-is-valid`, at error/warn/error/error/warn/error/warn. The eighth candidate, `jsx-a11y/click-events-have-key-events`, was declined: at error severity it fails `npm run lint` on this project's current UI code.
+
+L17 (evidence, T4): `npx oxlint` over fixtures outside the workspace reports `eslint(no-restricted-properties)` for all four `.reload()` spellings and `typescript(no-deprecated)`; the three `typescript/*` extension rules run under those names, and `npm run lint` plus `npm run format:check` exit 0.
