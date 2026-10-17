@@ -81,13 +81,11 @@ npm run format:check  # verify formatting without writing
 - **oxfmt replaced Prettier**, which this project never actually used.
   `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
   `.editorconfig` holds the 2-space indentation standard that both tools read.
-  `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
-  `.editorconfig` holds the 2-space indentation standard that both tools read.
 - Vendored skill content and generated artifacts (`.agents/**`, `agent/**`,
   `.atl/**`) are excluded from both tools, so upstream third-party code is never
   linted or reformatted. The lint config also keeps the ignores the ESLint setup
   declared (`.next/**`, `out/**`, `build/**`, `next-env.d.ts`). Without the
-  vendored excludes oxlint would scan 120 files instead of the 3 that belong to
+  vendored excludes oxlint would scan 121 files instead of the 4 that belong to
   this project.
 
 ## Deploy on Vercel
