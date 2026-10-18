@@ -43,3 +43,6 @@ yarn-error.log*
 next-env.d.ts
 # Local AI runtime state
 .atl/
+
+# Command Code local state
+.commandcode/
