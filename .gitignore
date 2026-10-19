@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Command Code local state
 .commandcode/
+
+# opencode/browser local captures
+.openchamber/
