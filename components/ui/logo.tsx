@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 export interface LogoProps {
   className?: string;
   markClassName?: string;
+  titleClassName?: string;
 }
 
-export function Logo({ className, markClassName }: LogoProps) {
+export function Logo({ className, markClassName, titleClassName }: LogoProps) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
       <svg
@@ -22,7 +23,12 @@ export function Logo({ className, markClassName }: LogoProps) {
           strokeLinejoin="round"
         />
       </svg>
-      <span className="text-heading-3 font-semibold text-foreground">
+      <span
+        className={cn(
+          "text-heading-3 font-semibold text-foreground",
+          titleClassName,
+        )}
+      >
         Vertex
       </span>
     </span>
