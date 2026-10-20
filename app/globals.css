@@ -73,4 +73,22 @@
   body {
     @apply bg-canvas text-foreground font-sans antialiased;
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-panel-border);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-neutral-300);
+  }
 }
