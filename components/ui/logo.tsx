@@ -12,11 +12,11 @@ export interface LogoProps {
  * A solid terracotta "V": an inverted triangle with a V-notch carved out of
  * it and a narrow slot at the top centre, so the two arms read as separate
  * strokes. Measured off the reference sheet (`design/vertex-home.png`): the
- * outer triangle spans (0,0) - (32,0) - (16,32); the notch opens at y=6.19
- * between x=9.5 and x=22.5 and closes at the point (16,20.13); the slot is
- * 3 units wide (x=14.5 to x=17.5) down to y=4.13, where it chamfers out to
- * the notch. The notch is drawn as a second subpath with `fill-rule:
- * evenodd` so it punches through the triangle.
+ * outer triangle spans (0,0) - (32,0) - (16,31); the slot is 3 units wide
+ * (x=14.5 to x=17.5) from the top edge down to y=6, where the notch opens
+ * with a hard horizontal shoulder across x=9.5 to x=22.5 and closes at the
+ * point (16,19.5). The notch is a second subpath in the same path, with
+ * `fill-rule: evenodd` so it punches through the triangle.
  */
 export function Logo({ className, markClassName, titleClassName }: LogoProps) {
   return (
@@ -34,7 +34,7 @@ export function Logo({ className, markClassName, titleClassName }: LogoProps) {
           </linearGradient>
         </defs>
         <path
-          d="M0 0H32L16 32Z M14.5 0H17.5V4.13L22.5 6.19L16 20.13L9.5 6.19L14.5 4.13Z"
+          d="M0 0H32L16 31Z M14.5 0H17.5V6H22.5L16 19.5L9.5 6H14.5Z"
           fill="url(#vertex-mark-gradient)"
           fillRule="evenodd"
         />
