@@ -141,3 +141,80 @@ From the repo root:
 6. Section 09-11: badges, four status indicators, and the progress bar render as shown.
 7. Section 12: cards render with example content and actions.
 8. Section 13: breadcrumbs and pagination render; pagination active page is page 1.
+
+## Measured implementation note (2026-10-20)
+
+Responsive and accessibility pass over the board, driven by the review report
+in `.commandcode/design/review-report.md`. Measurements were taken on the
+computed DOM with the browser at 320, 375, 768, 1024, 1280, 1440, 1536 and
+2560px.
+
+### Overflow, all closed
+
+| Viewport | Before                                                            | After              |
+| -------- | ----------------------------------------------------------------- | ------------------ |
+| 375px    | 313px of horizontal scroll                                        | 0                  |
+| 320px    | clipped swatch labels, clipped shadow values, clipped select text | 0 clipped elements |
+
+- Spacing row: `flex-wrap` added; the 9-step scale fits on one line from
+  1280px up and wraps below that instead of pushing the page wide.
+- Button matrix: the old `grid-cols-[3rem_repeat(4,minmax(0,1fr))]` gave each
+  button cell 80px at 1024px while the real buttons are 132-136px wide, so
+  every button overflowed its cell by ~27px. Measured at 1440px the cell was
+  135px against a 136px button — zero margin. The matrix is now one grid that
+  holds the variant names and the buttons together, so a name always sits
+  over its own button: four columns from 1536px (the first width where four
+  real buttons fit), two columns below that with the variant name repeated as
+  a caption on each button.
+- Shadows grid moved from `md:grid-cols-4` to `lg:grid-cols-4`; at 768px it
+  was squeezing four mono values into 58px cards.
+- Neutral swatch row moved from `md:grid-cols-8` to `xl:grid-cols-8`; at
+  768px each label was truncated to `Neut…`.
+- Badge grid, navigation row, panel padding (`p-4 sm:p-6`) and page padding
+  (`p-4 sm:p-8`) all now collapse instead of forcing the 12-column grid wider
+  than the viewport.
+- Board max width raised 1440px → 1600px so the four-column button matrix
+  has room at 1536px.
+
+### Colours bound to the tokens
+
+Swatches now read `var(--color-primary-500)` and friends instead of repeating
+the hex, so a swatch cannot drift from the token it documents. The three
+darker accent steps added for the colour pass (700 text, 600 fill, 800 hover)
+are documented in their own "Accent roles" row.
+
+### Copy and spec drift
+
+- "14 Principles" rendered 4 items → "Design Principles".
+- `Version 1.0 · May 2025` → `Version 1.1 · Oct 2026`.
+- Button specs corrected to the real values (hero is 48px/58px, not 48px;
+  accent text role is 6.45:1, not 6.47:1).
+- Input specs now state the focus ring and the 16px-below-640px rule.
+- Typography specimens scale 44 → 56 → 64px instead of a fixed 64px.
+
+### Accessibility
+
+- `Select` rebuilt on the ARIA listbox pattern: the trigger is a button with
+  `aria-haspopup="listbox"`, `aria-expanded` and `aria-controls`; focus moves
+  into the listbox, which carries `aria-activedescendant`. The old markup
+  put `role="option"` on an `<li>` containing a `<button>`, which is invalid
+  and broke arrow navigation. Arrow/Home/End/Enter/Escape all verified in the
+  browser; focus returns to the trigger on close.
+- `SearchInput` gained a real `<label>` bound to the input, a visible focus
+  ring, and 16px below 640px so iOS never zooms on focus.
+- `UserMenu` moves focus to the first item on open, cycles with the arrow
+  keys, and returns focus to the trigger on Escape.
+- `Pagination` buttons and breadcrumb links gained `focus-visible` rings;
+  the breadcrumb chevron moved from `neutral-300` (1.48:1) to `neutral-500`.
+- Pagination buttons are 40px on touch widths and 36px from `md`.
+
+### Tailwind
+
+- `--breakpoint-wide: 87.5rem` added to `@theme`. An arbitrary
+  `min-[1400px]:` variant is emitted _before_ the named breakpoints in the
+  stylesheet, so it lost the cascade to `sm:grid-cols-2` and never applied.
+  A named breakpoint slots into the ordered scale and wins.
+- `cn()` is plain `clsx` with no `tailwind-merge`, so a `className` override
+  that conflicts with a base class is decided by Tailwind's internal
+  utility order, not by the order the classes are written. Component
+  overrides avoid conflicting utilities rather than relying on the winner.

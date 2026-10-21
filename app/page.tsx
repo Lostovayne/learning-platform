@@ -3,47 +3,52 @@ import { CourseCardVertical } from "@/components/cards/course-card-vertical";
 import { DockerWhale } from "@/components/icons/docker-whale";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Button } from "@/components/ui/button";
+import { pageGutter, pageSheet, pageWidth } from "@/lib/layout";
 
 /**
  * Decorative strip of blurred gradient bars at the end of the page, matching
- * the reference footer silhouette. Purely visual; positions measured from the
- * reference (percentages of the full-bleed strip, heights anchored to bottom).
+ * the reference footer silhouette. Purely visual.
+ *
+ * Horizontal geometry is a percentage of the strip, so the bars keep their
+ * proportion and can never run past the right edge. Vertical geometry is a
+ * percentage of the strip height, which itself scales with the viewport, so
+ * the silhouette holds its shape from 320px to ultrawide.
  */
 const footerBars = [
-  { left: "2.5%", width: 44, height: 64, opacity: 0.8 },
-  { left: "8%", width: 48, height: 96, opacity: 0.9 },
-  { left: "14%", width: 46, height: 98, opacity: 0.85 },
-  { left: "20%", width: 52, height: 146, opacity: 1 },
-  { left: "26%", width: 48, height: 100, opacity: 0.9 },
-  { left: "32%", width: 44, height: 94, opacity: 0.85 },
-  { left: "38%", width: 40, height: 60, opacity: 0.75 },
-  { left: "46%", width: 38, height: 40, opacity: 0.8 },
-  { left: "51%", width: 40, height: 48, opacity: 0.85 },
-  { left: "56%", width: 36, height: 34, opacity: 0.75 },
-  { left: "63%", width: 40, height: 56, opacity: 0.8 },
-  { left: "68%", width: 44, height: 96, opacity: 0.9 },
-  { left: "73.5%", width: 52, height: 150, opacity: 1 },
-  { left: "80%", width: 44, height: 98, opacity: 0.9 },
-  { left: "85%", width: 42, height: 96, opacity: 0.85 },
-  { left: "89.5%", width: 52, height: 150, opacity: 1 },
-  { left: "95%", width: 40, height: 104, opacity: 0.9 },
+  { left: 2.5, width: 4.3, height: 38.6 },
+  { left: 8, width: 4.7, height: 57.8 },
+  { left: 14, width: 4.5, height: 59.0 },
+  { left: 20, width: 5.1, height: 88.0 },
+  { left: 26, width: 4.7, height: 60.2 },
+  { left: 32, width: 4.3, height: 56.6 },
+  { left: 38, width: 3.9, height: 36.1 },
+  { left: 46, width: 3.7, height: 24.1 },
+  { left: 51, width: 3.9, height: 28.9 },
+  { left: 56, width: 3.5, height: 20.5 },
+  { left: 63, width: 3.9, height: 33.7 },
+  { left: 68, width: 4.3, height: 57.8 },
+  { left: 73.5, width: 5.1, height: 90.4 },
+  { left: 80, width: 4.3, height: 59.0 },
+  { left: 85, width: 4.1, height: 57.8 },
+  { left: 89.5, width: 5.1, height: 90.4 },
+  { left: 95, width: 3.9, height: 62.7 },
 ] as const;
 
 function FooterBars() {
   return (
     <div
       aria-hidden="true"
-      className="relative mt-[54px] h-[166px] w-full overflow-hidden px-[30px]"
+      className="relative mt-[54px] h-[clamp(96px,16vw,166px)] w-full overflow-hidden"
     >
       {footerBars.map((bar, index) => (
         <div
           key={index}
           className="absolute bottom-0 blur-[8px]"
           style={{
-            left: bar.left,
-            width: bar.width,
-            height: bar.height,
-            opacity: bar.opacity,
+            left: `${bar.left}%`,
+            width: `${bar.width}%`,
+            height: `${bar.height}%`,
+            opacity: bar.height > 80 ? 1 : bar.height > 50 ? 0.9 : 0.8,
             background:
               "linear-gradient(to bottom, rgba(251,178,148,0) 0%, rgba(250,170,134,0.6) 12%, #FDAE92 30%, #FBD8CB 100%)",
           }}
@@ -60,10 +65,10 @@ function FooterBars() {
  */
 function NextLogoTile() {
   return (
-    <span className="grid h-[72px] w-[72px] shrink-0 place-items-center rounded-[18px] bg-black md:h-16 md:w-16 md:rounded-2xl lg:h-[67px] lg:w-[67px] lg:rounded-[18px]">
+    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-[14px] bg-black md:h-16 md:w-16 md:rounded-2xl lg:h-[72px] lg:w-[72px] lg:rounded-[18px]">
       <svg
         viewBox="0 0 180 180"
-        className="h-16 w-16 md:h-14 md:w-14 lg:h-[59px] lg:w-[59px]"
+        className="h-12 w-12 md:h-14 md:w-14 lg:h-[64px] lg:w-[64px]"
         aria-hidden="true"
       >
         <defs>
@@ -102,15 +107,15 @@ function NextLogoTile() {
 
 function DockerLogoTile() {
   return (
-    <span className="grid h-[72px] w-[72px] shrink-0 place-items-center md:h-16 md:w-16 lg:h-[67px] lg:w-[67px]">
-      <DockerWhale className="h-[64px] w-auto max-w-none md:h-14 lg:h-[59px]" />
+    <span className="grid h-14 w-14 shrink-0 place-items-center md:h-16 md:w-16 lg:h-[72px] lg:w-[72px]">
+      <DockerWhale className="h-11 w-auto max-w-none md:h-12 lg:h-[58px]" />
     </span>
   );
 }
 
 function TypeScriptLogoTile() {
   return (
-    <span className="grid h-[72px] w-[72px] shrink-0 place-items-center rounded-[18px] bg-[#3178C6] md:h-16 md:w-16 md:rounded-2xl lg:h-[67px] lg:w-[67px] lg:rounded-[18px]">
+    <span className="grid h-14 w-14 shrink-0 place-items-center rounded-[14px] bg-[#3178C6] md:h-16 md:w-16 md:rounded-2xl lg:h-[72px] lg:w-[72px] lg:rounded-[18px]">
       <svg viewBox="0 0 72 72" className="h-full w-full" aria-hidden="true">
         <text
           x="36"
@@ -159,96 +164,105 @@ const courses = [
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-canvas">
-      <SiteHeader />
-      <main className="flex-1">
-        <section className="border-b border-panel-border bg-canvas">
-          <div className="mx-auto w-full max-w-[1024px] px-8 pb-12 pt-14 text-center md:px-20 md:pb-[53px] md:pt-[68px]">
-            <div className="flex justify-center">
-              <span className="inline-flex items-center rounded-[10px] border border-panel-border bg-white px-6 py-[10px] text-[12px] font-semibold tracking-[0.15em] text-primary-600">
-                INTELLIGENT LEARNING
-              </span>
-            </div>
-            <h1 className="mx-auto mt-[22px] font-display text-[32px] font-bold leading-[40px] text-black md:text-[3.5rem] md:leading-[74px]">
-              Search your learning
-              <br />
-              in plain English.
-            </h1>
-            <p className="mx-auto mt-[21px] max-w-md text-[17px] leading-[28px] text-neutral-700 md:text-[20px] md:leading-[33px]">
-              Vertex understands what you want to learn and finds the exact
-              lessons across all your courses.
-            </p>
-            <div className="mt-7 flex justify-center md:mt-10">
-              <Button className="h-12 rounded-md bg-[#E46C46] px-6 text-lg text-white hover:bg-[#d05d3a] md:h-[58px] md:px-8">
-                Explore Courses
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </Button>
-            </div>
-            <div className="relative mx-auto mt-8 max-w-[748px] md:mt-11">
-              <Search
-                className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground md:left-6 md:h-6 md:w-6"
-                aria-hidden="true"
-              />
-              <input
-                type="search"
-                placeholder="Ask anything about your learning..."
-                className="h-14 w-full rounded-[16px] border border-panel-border bg-white pl-[48px] pr-4 text-[13px] text-neutral-700 placeholder:text-neutral-500 focus:border-primary-400 focus:outline-none md:h-[76px] md:rounded-[20px] md:pl-[68px] md:pr-[110px] md:text-lg"
-              />
-              <kbd className="pointer-events-none absolute right-7 top-1/2 hidden h-[42px] -translate-y-1/2 items-center rounded-[8px] border border-panel-border bg-white px-4 text-[12px] text-neutral-700 md:flex">
-                ⌘ K
-              </kbd>
-            </div>
-          </div>
-        </section>
-        <section className="bg-canvas">
-          <div className="mx-auto w-full max-w-[1024px] px-8 pt-[52px] md:px-20">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-[22px] font-bold leading-[28px] text-black md:text-heading-1">
-                All Courses
-              </h2>
-              <a
-                href="#"
-                className="inline-flex items-center gap-2 text-body-lg font-medium text-primary-600 transition-colors hover:text-primary-500"
-              >
-                View all courses
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
-            <div className="mt-7 grid grid-cols-1 items-stretch gap-[18px] md:grid-cols-3">
-              {courses.map((course) => (
-                <CourseCardVertical
-                  key={course.title}
-                  icon={course.icon}
-                  title={course.title}
-                  description={course.description}
-                  level={course.level}
-                  duration={course.duration}
-                  modules={course.modules}
+    <div className="hatch-edge min-h-screen">
+      <div
+        className={`flex min-h-screen flex-col rounded-t-[20px] bg-canvas ${pageSheet}`}
+      >
+        <SiteHeader />
+        <main className="flex-1">
+          <section className="border-b border-panel-border bg-canvas">
+            <div
+              className={`mx-auto ${pageWidth} ${pageGutter} pb-12 pt-10 text-center md:pb-[53px] md:pt-[68px]`}
+            >
+              <div className="flex justify-center">
+                <span className="inline-flex items-center rounded-[10px] border border-panel-border bg-white px-4 py-[10px] text-[12px] font-semibold tracking-[0.15em] text-primary-700">
+                  INTELLIGENT LEARNING
+                </span>
+              </div>
+              <h1 className="mx-auto mt-[22px] max-w-[330px] font-display text-[32px] font-bold leading-[40px] text-balance text-black md:max-w-none md:text-[3.5rem] md:leading-[74px]">
+                Search your learning
+                <br className="hidden md:inline" /> in plain English.
+              </h1>
+              <p className="mx-auto mt-[21px] max-w-[24rem] text-[17px] leading-[28px] text-neutral-700 md:max-w-md md:text-[20px] md:leading-[33px]">
+                Vertex understands what you want to learn and finds the exact
+                lessons across all your courses.
+              </p>
+              <div className="mt-7 flex justify-center md:mt-10">
+                <Button variant="brand" size="hero">
+                  Explore Courses
+                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                </Button>
+              </div>
+              <div className="relative mx-auto mt-8 max-w-[748px] md:mt-11">
+                <Search
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground md:left-6 md:h-6 md:w-6"
+                  aria-hidden="true"
                 />
-              ))}
+                <label htmlFor="course-search" className="sr-only">
+                  Search your learning
+                </label>
+                <input
+                  id="course-search"
+                  type="search"
+                  placeholder="Ask anything about your learning..."
+                  className="h-14 w-full min-w-0 rounded-[16px] border border-panel-border bg-white pl-[44px] pr-4 text-base text-neutral-700 placeholder:text-[15px] placeholder:text-neutral-500 focus:border-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 md:h-[76px] md:rounded-[20px] md:pl-[68px] md:pr-[110px] md:text-lg md:placeholder:text-lg"
+                />
+                <kbd className="pointer-events-none absolute right-5 top-1/2 hidden h-[42px] -translate-y-1/2 items-center rounded-[8px] border border-panel-border bg-white px-4 text-[12px] text-neutral-700 md:right-7 md:flex">
+                  ⌘ K
+                </kbd>
+              </div>
             </div>
-            <div className="mt-16 flex items-center gap-2 text-[14px] leading-[22px] text-foreground md:text-body-lg">
-              <span
-                className="h-px flex-1 bg-panel-border"
-                aria-hidden="true"
-              />
-              <Star
-                className="ml-1 h-5 w-5 shrink-0 text-[#E46C46]"
-                strokeWidth={2}
-                aria-hidden="true"
-              />
-              <span className="ml-5 md:whitespace-nowrap">
-                New courses and lessons added every week.
-              </span>
-              <span
-                className="h-px flex-1 bg-panel-border"
-                aria-hidden="true"
-              />
+          </section>
+          <section className="bg-canvas">
+            <div className={`mx-auto ${pageWidth} ${pageGutter} pt-[52px]`}>
+              <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <h2 className="font-display text-[22px] font-bold leading-[28px] text-black md:text-heading-1">
+                  All Courses
+                </h2>
+                <a
+                  href="#"
+                  className="inline-flex items-center gap-2 rounded-xs text-body-lg font-medium text-primary-700 transition-colors hover:text-primary-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-600"
+                >
+                  View all courses
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
+              </div>
+              <div className="mt-7 grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {courses.map((course) => (
+                  <CourseCardVertical
+                    key={course.title}
+                    icon={course.icon}
+                    title={course.title}
+                    description={course.description}
+                    level={course.level}
+                    duration={course.duration}
+                    modules={course.modules}
+                  />
+                ))}
+              </div>
+              <div className="mt-16 flex items-center gap-2 text-[14px] leading-[22px] text-foreground md:text-body-lg">
+                <span
+                  className="h-px flex-1 bg-panel-border"
+                  aria-hidden="true"
+                />
+                <Star
+                  className="ml-1 h-4 w-4 shrink-0 text-primary-500 sm:h-5 sm:w-5"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                />
+                <span className="ml-3 md:ml-5 md:whitespace-nowrap">
+                  New courses and lessons added every week.
+                </span>
+                <span
+                  className="h-px flex-1 bg-panel-border"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
-          </div>
-          <FooterBars />
-        </section>
-      </main>
+            <FooterBars />
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

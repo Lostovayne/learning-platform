@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 export type BadgeVariant = "video" | "lesson" | "popular";
 
 const variantClasses: Record<BadgeVariant, string> = {
-  video: "bg-primary-100 text-primary-500",
+  video: "bg-primary-100 text-primary-700",
   lesson: "bg-lesson-background text-lesson",
-  popular: "bg-primary-100 text-primary-500",
+  popular: "bg-primary-100 text-primary-700",
 };
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {

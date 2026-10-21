@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Fragment } from "react";
 import {
   Accessibility,
   BarChart3,
@@ -29,23 +30,35 @@ import { Select } from "@/components/ui/select";
 import { StatusIndicator } from "@/components/ui/status";
 import { cn } from "@/lib/utils";
 
+/**
+ * Swatch colors are read from the CSS custom properties that Tailwind emits
+ * from `@theme`, so a swatch can never drift from the token it documents.
+ * The hex is reference text only.
+ */
 const primaryColors = [
-  ["Primary 500", "#F97316"],
-  ["Primary 400", "#FB923C"],
-  ["Primary 300", "#FDA374"],
-  ["Primary 200", "#FED7AA"],
-  ["Primary 100", "#FEE9DE"],
+  ["Primary 500", "#E46C46", "--color-primary-500"],
+  ["Primary 400", "#EC8760", "--color-primary-400"],
+  ["Primary 300", "#F2A983", "--color-primary-300"],
+  ["Primary 200", "#F7D0BD", "--color-primary-200"],
+  ["Primary 100", "#FBE6DC", "--color-primary-100"],
+] as const;
+
+/** Darker steps added after the reference poster: they carry role contrast. */
+const primaryRoleColors = [
+  ["Primary 700", "#A13F1D", "--color-primary-700", "text role"],
+  ["Primary 600", "#C2522A", "--color-primary-600", "action fill"],
+  ["Primary 800", "#7D2C0E", "--color-primary-800", "hover state"],
 ] as const;
 
 const neutralColors = [
-  ["Neutral 900", "#0F172A"],
-  ["Neutral 700", "#334155"],
-  ["Neutral 500", "#64748B"],
-  ["Neutral 300", "#CBD5E1"],
-  ["Neutral 200", "#E2E8F0"],
-  ["Neutral 100", "#F1F5F9"],
-  ["Neutral 50", "#FAFAFC"],
-  ["White", "#FFFFFF"],
+  ["Neutral 900", "#0F172A", "--color-neutral-900"],
+  ["Neutral 700", "#334155", "--color-neutral-700"],
+  ["Neutral 500", "#5D6B83", "--color-neutral-500"],
+  ["Neutral 300", "#CBD5E1", "--color-neutral-300"],
+  ["Neutral 200", "#E2E8F0", "--color-neutral-200"],
+  ["Neutral 100", "#F1F5F9", "--color-neutral-100"],
+  ["Neutral 50", "#FAFAFC", "--color-neutral-50"],
+  ["White", "#FFFFFF", "--color-white"],
 ] as const;
 
 const typeScale = [
@@ -149,7 +162,7 @@ const buttonColumns: readonly ButtonColumn[] = [
     name: "Primary",
     label: "Get Started",
     variant: "primary",
-    hoverClass: "bg-primary-600",
+    hoverClass: "bg-primary-700",
   },
   {
     name: "Secondary",
@@ -169,11 +182,31 @@ const buttonColumns: readonly ButtonColumn[] = [
     label: "Watch Video",
     variant: "text",
     hoverClass: "bg-primary-100",
-    icon: <CirclePlayChip className="h-4 w-4 text-primary-500" />,
+    icon: <CirclePlayChip className="h-4 w-4 text-primary-700" />,
   },
 ] as const;
 
 const buttonStates = ["Default", "Hover", "Disabled"] as const;
+
+function MatrixButton({
+  column,
+  state,
+}: {
+  column: ButtonColumn;
+  state: string;
+}) {
+  return (
+    <Button
+      variant={column.variant}
+      size="md"
+      disabled={state === "Disabled"}
+      className={state === "Hover" ? column.hoverClass : undefined}
+    >
+      {column.icon}
+      {column.label}
+    </Button>
+  );
+}
 
 const principles = [
   {
@@ -209,7 +242,7 @@ function Panel({
   return (
     <div
       className={cn(
-        "rounded-lg border border-panel-border bg-white p-6",
+        "rounded-lg border border-panel-border bg-white p-4 sm:p-6",
         className,
       )}
     >
@@ -218,12 +251,16 @@ function Panel({
   );
 }
 
+/**
+ * Section headings are real <h2> so the board keeps a h1 → h2 → h3
+ * hierarchy; the card titles inside the cards panel are <h3>.
+ */
 function SectionHeader({ index, title }: { index: string; title: string }) {
   return (
-    <p className="text-small font-bold uppercase tracking-wider">
-      <span className="text-primary-500">{index}</span>{" "}
+    <h2 className="text-small font-bold uppercase tracking-wider">
+      <span className="text-primary-700">{index}</span>{" "}
       <span className="text-foreground">{title}</span>
-    </p>
+    </h2>
   );
 }
 
@@ -231,15 +268,28 @@ function SubLabel({ children }: { children: ReactNode }) {
   return <p className="text-small text-neutral-700">{children}</p>;
 }
 
-function Swatch({ name, hex }: { name: string; hex: string }) {
+function Swatch({
+  name,
+  hex,
+  token,
+  note,
+}: {
+  name: string;
+  hex: string;
+  token: string;
+  note?: string;
+}) {
   return (
-    <div>
+    <div className="min-w-0">
       <div
         className="h-12 w-full rounded-sm border border-black/[0.04]"
-        style={{ backgroundColor: hex }}
+        style={{ backgroundColor: `var(${token})` }}
       />
-      <p className="mt-2 text-small text-neutral-700">{name}</p>
-      <p className="text-small text-neutral-500">{hex}</p>
+      <p className="mt-2 truncate text-small text-neutral-700">{name}</p>
+      <p className="truncate text-small text-neutral-500">{hex}</p>
+      {note ? (
+        <p className="truncate text-small text-neutral-500">{note}</p>
+      ) : null}
     </div>
   );
 }
@@ -247,8 +297,8 @@ function Swatch({ name, hex }: { name: string; hex: string }) {
 export default function DesignSystemPage() {
   return (
     <div className="min-h-screen bg-canvas">
-      <main className="mx-auto max-w-[1440px] p-8">
-        <div className="grid grid-cols-12 gap-5">
+      <main className="mx-auto max-w-[1600px] p-4 sm:p-8">
+        <div className="grid grid-cols-12 gap-3 sm:gap-5">
           <Panel className="col-span-12 flex flex-col bg-header-panel md:col-span-4">
             <Logo />
             <h1 className="mt-8 font-display text-display-1 font-bold text-foreground">
@@ -259,7 +309,7 @@ export default function DesignSystemPage() {
               modern and focused on clarity, consistency and intuitive learning.
             </p>
             <p className="mt-auto pt-10 text-small uppercase tracking-widest text-neutral-500">
-              Version 1.0 · May 2025
+              Version 1.1 · Oct 2026
             </p>
           </Panel>
 
@@ -267,17 +317,31 @@ export default function DesignSystemPage() {
             <SectionHeader index="01" title="Colors" />
             <div className="mt-5">
               <SubLabel>Primary</SubLabel>
-              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                {primaryColors.map(([name, hex]) => (
-                  <Swatch key={name} name={name} hex={hex} />
+              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {primaryColors.map(([name, hex, token]) => (
+                  <Swatch key={name} name={name} hex={hex} token={token} />
+                ))}
+              </div>
+            </div>
+            <div className="mt-6">
+              <SubLabel>Accent roles</SubLabel>
+              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                {primaryRoleColors.map(([name, hex, token, note]) => (
+                  <Swatch
+                    key={name}
+                    name={name}
+                    hex={hex}
+                    token={token}
+                    note={note}
+                  />
                 ))}
               </div>
             </div>
             <div className="mt-6">
               <SubLabel>Neutral</SubLabel>
-              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-8">
-                {neutralColors.map(([name, hex]) => (
-                  <Swatch key={name} name={name} hex={hex} />
+              <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-8">
+                {neutralColors.map(([name, hex, token]) => (
+                  <Swatch key={name} name={name} hex={hex} token={token} />
                 ))}
               </div>
             </div>
@@ -286,31 +350,31 @@ export default function DesignSystemPage() {
           <Panel className="col-span-12 md:col-span-5">
             <SectionHeader index="02" title="Typography" />
             <div className="mt-8 space-y-10">
-              <div className="flex items-center gap-8">
-                <span className="font-display text-[64px] leading-none font-medium text-foreground">
+              <div className="flex items-center gap-5 sm:gap-8">
+                <span className="font-display text-[44px] leading-none font-medium text-foreground sm:text-[56px] lg:text-[64px]">
                   Ag
                 </span>
-                <div>
+                <div className="min-w-0">
                   <p className="font-display text-heading-3 font-bold text-foreground">
                     Playfair Display
                   </p>
                   <p className="mt-1.5 text-small text-neutral-500">
-                    Elegant <span className="text-primary-500">·</span> Readable{" "}
-                    <span className="text-primary-500">·</span> Timeless
+                    Elegant <span className="text-primary-700">·</span> Readable{" "}
+                    <span className="text-primary-700">·</span> Timeless
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-8">
-                <span className="text-[64px] leading-none font-medium text-foreground">
+              <div className="flex items-center gap-5 sm:gap-8">
+                <span className="text-[44px] leading-none font-medium text-foreground sm:text-[56px] lg:text-[64px]">
                   Ag
                 </span>
-                <div>
+                <div className="min-w-0">
                   <p className="text-heading-3 font-semibold text-foreground">
                     Inter
                   </p>
                   <p className="mt-1.5 text-small text-neutral-500">
-                    Clean <span className="text-primary-500">·</span> Modern{" "}
-                    <span className="text-primary-500">·</span> Highly legible
+                    Clean <span className="text-primary-700">·</span> Modern{" "}
+                    <span className="text-primary-700">·</span> Highly legible
                   </p>
                 </div>
               </div>
@@ -360,7 +424,7 @@ export default function DesignSystemPage() {
           <Panel className="col-span-12 md:col-span-6">
             <SectionHeader index="04" title="Spacing System" />
             <p className="mt-4 text-body text-neutral-700">Base unit: 4px</p>
-            <div className="mt-6 flex items-end gap-6">
+            <div className="mt-6 flex flex-wrap items-end gap-x-4 gap-y-4">
               {spacingScale.map(({ px, rem }) => (
                 <div key={px} className="flex flex-col items-center gap-2">
                   <div
@@ -369,7 +433,9 @@ export default function DesignSystemPage() {
                   />
                   <div className="text-center">
                     <p className="text-small text-foreground">{px}</p>
-                    <p className="text-small text-neutral-500">{rem}</p>
+                    <p className="whitespace-nowrap text-small text-neutral-500">
+                      {rem}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -392,19 +458,19 @@ export default function DesignSystemPage() {
               ))}
             </div>
             <p className="mt-8 text-body text-neutral-700">Shadows</p>
-            <div className="mt-4 grid grid-cols-2 gap-5 md:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
               {shadowScale.map(({ name, value, className }) => (
                 <div
                   key={name}
                   className={cn(
-                    "rounded-md border border-neutral-100 bg-white p-4",
+                    "min-w-0 rounded-md border border-neutral-100 bg-white p-4",
                     className,
                   )}
                 >
                   <p className="text-body font-semibold text-foreground">
                     {name}
                   </p>
-                  <p className="mt-1 font-mono text-small text-neutral-500">
+                  <p className="mt-1 break-words font-mono text-small leading-[16px] text-neutral-500">
                     {value}
                   </p>
                 </div>
@@ -435,8 +501,16 @@ export default function DesignSystemPage() {
 
           <Panel className="col-span-12 md:col-span-6">
             <SectionHeader index="07" title="Buttons" />
-            <div className="mt-6 grid grid-cols-[3rem_repeat(4,minmax(0,1fr))] items-center gap-x-3 gap-y-6">
-              <span />
+            {/*
+              Four columns only fit once the panel is wide enough for the
+              real button widths, which is 2xl and up. There the matrix
+              matches the poster: variant names in a header row, one row per
+              state. Below that each button carries its variant name as a
+              caption, so a button is never ambiguous about which variant it
+              is.
+            */}
+            <div className="mt-6 hidden 2xl:grid 2xl:grid-cols-[4rem_repeat(4,minmax(0,1fr))] 2xl:items-center 2xl:gap-x-3 2xl:gap-y-4">
+              <span aria-hidden="true" />
               {buttonColumns.map((col) => (
                 <p
                   key={col.name}
@@ -446,45 +520,59 @@ export default function DesignSystemPage() {
                 </p>
               ))}
               {buttonStates.map((state) => (
-                <div key={state} className="contents">
-                  <span className="justify-self-start whitespace-nowrap text-small text-neutral-500">
-                    {state}
-                  </span>
+                <Fragment key={state}>
+                  <span className="text-small text-neutral-500">{state}</span>
                   {buttonColumns.map((col) => (
                     <div key={col.name} className="flex min-w-0 justify-center">
-                      <Button
-                        variant={col.variant}
-                        size="md"
-                        disabled={state === "Disabled"}
-                        className={
-                          state === "Hover" ? col.hoverClass : undefined
-                        }
-                      >
-                        {col.icon}
-                        {col.label}
-                      </Button>
+                      <MatrixButton column={col} state={state} />
                     </div>
                   ))}
+                </Fragment>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-col gap-6 2xl:hidden">
+              {buttonStates.map((state) => (
+                <div key={state}>
+                  <p className="mb-3 text-small text-neutral-500">{state}</p>
+                  <div className="grid grid-cols-1 gap-x-3 gap-y-4 sm:grid-cols-2 wide:grid-cols-4">
+                    {buttonColumns.map((col) => (
+                      <div
+                        key={col.name}
+                        className="flex min-w-0 flex-col items-center gap-1.5"
+                      >
+                        <p className="text-small text-neutral-500">
+                          {col.name}
+                        </p>
+                        <MatrixButton column={col} state={state} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
             <ul className="mt-8 list-disc space-y-1 pl-4 text-small text-neutral-500 marker:text-neutral-400">
-              <li>Height: 44px (default)</li>
-              <li>Padding: 0 16px (lg), 0 12px (md)</li>
+              <li>Height: 44px (lg and md), 48px / 58px (hero)</li>
+              <li>Padding: 0 16px (lg), 0 12px (md), 0 24px / 32px (hero)</li>
               <li>Radius: 12px</li>
-              <li>Font: Inter Medium (14-16px)</li>
+              <li>Font: Inter Medium (14-16px), Bold 19px (hero)</li>
+              <li>
+                Brand fill #E46C46 is hero-only: its label is 19px bold, which
+                counts as large text (3:1 minimum)
+              </li>
+              <li>Primary fill #C2522A carries white text at 4.63:1</li>
+              <li>Accent text role #A13F1D on light surfaces, 6.45:1</li>
             </ul>
           </Panel>
 
-          <Panel className="col-span-12 md:col-span-3">
+          <Panel className="col-span-12 md:col-span-12 lg:col-span-3">
             <SectionHeader index="08" title="Inputs" />
             <p className="mt-5 text-small text-neutral-700">
               Search / Text Input
             </p>
             <SearchInput
               className="mt-3"
+              label="Search"
               placeholder="Search anything..."
-              aria-label="Search anything"
             />
             <p className="mt-6 text-small text-neutral-700">Select</p>
             <Select
@@ -503,13 +591,14 @@ export default function DesignSystemPage() {
               <li>Radius: 12px</li>
               <li>Border: 1px solid #E2E8F0</li>
               <li>Padding: 0 16px</li>
-              <li>Focus: Border color #FB923C</li>
+              <li>Focus: border color #C2522A plus a 2px offset ring</li>
+              <li>Font: 16px below 640px, 14px above, so iOS never zooms</li>
             </ul>
           </Panel>
 
           <Panel className="col-span-12 md:col-span-4">
             <SectionHeader index="09" title="Badges / Tags" />
-            <div className="mt-5 grid grid-cols-3 gap-4">
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <SubLabel>Video</SubLabel>
                 <Badge variant="video" className="mt-2">
@@ -602,10 +691,10 @@ export default function DesignSystemPage() {
 
           <Panel className="col-span-12 md:col-span-4">
             <SectionHeader index="13" title="Navigation" />
-            <div className="mt-5 flex items-center gap-8">
+            <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4">
               <Logo />
               <nav className="flex items-center gap-6 text-body">
-                <span className="font-semibold text-primary-500">Courses</span>
+                <span className="font-semibold text-primary-700">Courses</span>
                 <span className="text-foreground">My Learning</span>
               </nav>
             </div>
@@ -634,8 +723,8 @@ export default function DesignSystemPage() {
         </div>
 
         <footer className="mt-8 flex flex-col gap-8 pb-4 lg:flex-row lg:items-center">
-          <p className="shrink-0 text-small font-bold uppercase tracking-wider text-primary-500">
-            14 Principles
+          <p className="shrink-0 text-small font-bold uppercase tracking-wider text-primary-700">
+            Design Principles
           </p>
           <div className="grid flex-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {principles.map(({ icon: Icon, title, description }) => (

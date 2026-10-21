@@ -32,7 +32,7 @@ Implement the Vertex home page (`app/page.tsx`) as a pixel-faithful replica of t
    - TypeScript Deep Dive — "Go beyond the basics and write safer, more expressive code." — Intermediate, 14h 36m, 10 modules
 5. **Card icons**: inline SVGs — Next.js mark (white on black tile), Docker whale (official brand colors on transparent tile), TypeScript square (white "TS" on blue tile). Sourced from simple-icons paths, colored per brand.
 6. **Footer decoration**: the reference ends with a blurred bar-chart strip of orange gradient columns. Implemented as a decorative inline component in the page (flex row of gradient bars, heights varying, blurred), matching the reference's silhouette. Purely visual, no content.
-7. **Avatar asset**: downloaded a free portrait (`https://i.pravatar.cc/96?img=26`) into `public/avatar-victoria.jpg` — the closest available match to the reference photo (dark-haired woman, plain background). The exact stock photo in the reference is not identifiable/reproducible; this is the same subject, treated identically (40px round crop).
+7. **Avatar asset**: downloaded a free portrait (`https://i.pravatar.cc/96?img=26`) into `public/avatar-victoria.jpg` — the closest available match to the reference photo (dark-haired woman, plain background). The exact stock photo in the reference is not identifiable/reproducible; this is the same subject, treated identically (40px round crop). Later replaced by an initials circle and the file removed — see "Resolved: the avatar".
 8. **Strict TDD does not apply**: no test runner installed, deliverable is a static visual page (same exception as the design-system prompt). Verification is type check, lint, production build, and side-by-side visual comparison against `design/vertex-home.png` at desktop width. Responsive behavior is adapted sensibly down to mobile (grid stacks, search full width) with the desktop layout exact.
 9. **Interactive bits stay static**: nav links, CTA, and cards are links/buttons with correct hover styles; search input accepts typing but submits nowhere.
 
@@ -41,7 +41,7 @@ Implement the Vertex home page (`app/page.tsx`) as a pixel-faithful replica of t
 - `app/page.tsx` — replace redirect with the home page (server component).
 - `components/layout/site-header.tsx` — new: site header (logo, nav, bell, avatar).
 - `components/cards/course-card-vertical.tsx` — new: vertical course card.
-- `public/avatar-victoria.jpg` — new: header avatar asset.
+- `public/avatar-victoria.jpg` — new: header avatar asset (since removed with the photo avatar).
 - `prompts/vertex-home.md` — this file.
 
 ## Security considerations
@@ -82,3 +82,164 @@ Pixel measurement of the reference (ink positions verified by rendering and re-m
 2. Compare against `design/vertex-home.png` at desktop width: header, hero, cards, star divider, footer bars.
 3. Narrow the window: cards stack to one column and the search bar stays full-width without overflow.
 4. Hover "Explore Courses", "View all courses", and the cards: hover states match the design system.
+
+## Measured implementation note (2026-10-20)
+
+Responsive and accessibility pass driven by `.commandcode/design/review-report.md`.
+Measurements were taken on the computed DOM at 320, 375, 768, 1024, 1280, 1440
+and 2560px.
+
+### Overflow, all closed
+
+| Viewport | Before                                                                                                                                      | After            |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| 320px    | 8-9px of card overflow, truncated search placeholder, 0px gap between the H2 and its link, footer bars cut off at 388px in a 375px viewport | 0                |
+| 768px    | 73px of overflow out of the course card meta row                                                                                            | 0, the row wraps |
+| 1440px   | —                                                                                                                                           | 0                |
+
+- Card meta row: `whitespace-nowrap` on the container was replaced with
+  `flex-wrap` + `justify-between`. The row is one line at 1024px and above
+  and wraps to two lines below that, instead of spilling out of the card.
+- Footer bars: the bars were positioned in `%` but sized in fixed `px`, so
+  the last two ran past the right edge (388px and 396px in a 375px
+  viewport). Widths and heights are now percentages of the strip, and the
+  strip height scales with the viewport, so the silhouette keeps its shape
+  from 320px to ultrawide and can never leave the strip.
+- Search placeholder was truncated at 320px; the input now has 16px text
+  below `sm` and 18px above, and the padding was reduced to match.
+
+### Proportion
+
+- Card description was 16px (`text-body-lg`) and wrapped to three lines
+  where the reference wraps to two. The reference metadata is ~13-14px, so
+  the description moved to `text-body` (14px) with `neutral-500`, and the
+  meta row to 10px with 12px icons. The card now reads title → description →
+  meta at three clear steps and the meta row is one line at desktop.
+- The catalog grid is `md:grid-cols-2 lg:grid-cols-3`. At 768px the three
+  column layout squeezed the cards to 189px; two columns give 292px.
+- The course logos were `72px → 64px → 67px` across breakpoints, which is
+  not monotonic. They are now 56 → 64 → 72px, and the star scales 16 → 20px.
+
+### Gutter and hit areas
+
+- The header used `md:px-16` and the content `md:px-20`, so the logo sat
+  16px to the left of every card on the same grid. Both surfaces now read
+  `pageWidth` and `pageGutter` from `lib/layout.ts`. Verified: at 320px the
+  logo, the "All Courses" heading and the first card all start at x=32.
+- The bell was 34×34 and the avatar 32×32, both under the 44px touch
+  minimum and the only two controls in the mobile header. Both are now
+  44×44 hit areas with the visual size unchanged.
+- The hero heading used a hard `<br/>`, which at 320px left "learning"
+  alone on a line. The break is now `md:` only, so desktop keeps the
+  reference two-liner and mobile balances the lines itself. The "All Courses"
+  row wraps with a gap instead of colliding at 320px.
+
+### Accessibility
+
+- The search field had no accessible name — the placeholder was doing the
+  label's job. It now has a real `<label>` (visually hidden) bound to the
+  input, and the placeholder stays as the example.
+- The focus ring on the search input and the "View all courses" link was
+  `outline: none` with only a border-colour change. Both now show a 2px
+  offset focus ring.
+
+### Proportion against the reference, measured
+
+The reference (`design/vertex-home.png`, 1024px wide — the same width as the
+page's `max-w-[1024px]`) was measured pixel by pixel in a canvas, and the
+header was compared element by element. Every gap below is a real difference,
+not an eyeball one.
+
+**Header** (reference vs implementation, after this pass):
+
+| Element            | Reference | Now  | Delta |
+| ------------------ | --------- | ---- | ----- |
+| Logo mark          | 31px      | 30px | -1    |
+| "Vertex" wordmark  | 68px      | 66px | -2    |
+| "Courses" link     | 56px      | 55px | -1    |
+| "My Learning" link | 82px      | 83px | +1    |
+| Bell icon          | 20px      | 20px | 0     |
+| Avatar             | 44px      | 36px | -8    |
+| Logo → nav gap     | 64px      | 64px | 0     |
+| Nav link gap       | 46px      | 48px | +2    |
+| Bell → avatar gap  | 29px      | 28px | -1    |
+
+- The nav links were 16px; the reference is 14px, which is why "My Learning"
+  measured 94px against the reference's 82px. Now `text-body`.
+- The bell icon was 22px, now 20px.
+- The avatar was scaled 36 → 40 → 44px. It is now 32 → 36px. The reference
+  carries a ~51px photo, but that reference balances because its logo mark is a
+  **solid filled triangle**; ours is a thin stroked "V" with about half the
+  optical weight, so a large avatar tipped the header. At 36px the header
+  reads mark 30 / bell 20 / avatar 36 and the eye goes to the logo first, as
+  it should. The hit area stays 44×44. Superseded by "Resolved: the avatar"
+  below, which swaps the photo for an initials circle at 28/32px.
+
+### Resolved: the logo mark
+
+The reference mark (both `vertex-home.png` and `vertex-designsystem.png`) is a
+solid filled terracotta "V" — 32×31px of ink — whose arms overhang inward at
+the top, leaving a narrow slit at the centre. `components/ui/logo.tsx` used to
+draw a thin stroked "V" instead, about half the optical mass.
+
+`components/ui/logo.tsx` now draws the reference mark as a filled path on a
+`viewBox="0 0 34 32"` canvas, filled with a diagonal gradient across the brand
+ramp (`primary-400` → `primary-500` → `primary-600`). The path was traced from
+the poster pixels, not eyeballed: the 32px mark in `design/vertex-home.png` was
+sampled into an ASCII grid and the vertices were fitted to that grid, so the
+overhangs, the slit and the notch apex land within ~1px of the reference.
+
+No SVG in the [svgl.app](https://svgl.app) library matches this mark — the full
+catalog (670 logos, via `https://api.svgl.app`) was checked; the "V" logos there
+are Vite (violet), Vue and Vitest (green) and Vuetify (blue). The mark was
+therefore drawn by hand.
+
+### Resolved: the avatar
+
+The header avatar is now an initials circle instead of a photo: `neutral-100`
+fill, `neutral-700` semibold initials, 28px on desktop (`md` and up) and 32px
+below it, inside the unchanged 44×44 hit area. On desktop the circle is ~1.4×
+the bell glyph, the same ratio as the reference screenshot. `public/avatar-victoria.jpg`
+was removed with its last reference.
+
+**Hero**
+
+- The headline had `max-w-[14ch]`, which clamped it to 289px below `md`. In a
+  634px container that made a narrow island of three short lines, and the
+  448px subtitle was wider than the headline — the hierarchy was inverted.
+  The measure is now 330px, which holds "Search your learning" on one line and
+  breaks exactly where the reference breaks, at 32px as well as at 56px.
+- The badge had `px-6`; the reference has 16px of padding, so it is now 212px
+  wide against the reference's 208px.
+- The subtitle keeps `max-w-md` (448px, the reference's own measure) from
+  `md` up and drops to 24rem below it.
+
+### Verified after the sizing pass
+
+- 320, 375, 640, 768, 1024, 1440px: 0 of horizontal scroll and 0 clipped
+  elements on both pages.
+- 640px, the equivalent of 200% zoom on a 1280px screen: the home renders in
+  2 lines of headline with the reference break, the design-system board does
+  not clip.
+- `forced-colors: active`: both pages keep their borders, their text and the
+  hex labels of the swatches, so the colour information survives the loss of
+  the palette.
+- The last truncated swatch label ("Primary 800 · hover" at 1024px) now
+  splits its role into a third line instead of clipping.
+
+### Open
+
+- **"View all courses" apunta a `href="#"`**, igual que los links del header y
+  del menú de avatar. No hay ruta de catálogo todavía, así que apuntarlos a
+  `/courses` cambiaría un no-op por un 404. Queda como placeholder, flagged
+  by oxlint (`jsx-a11y(anchor-is-valid)`).
+- **El menú de avatar repite los dos links del header.** En desktop la nav
+  inline y el avatar menu ofrecen los mismos destinos; el menú necesita real
+  account actions, which do not exist yet.
+- **El badge "INTELLIGENT LEARNING" compite con el H1** — lo detecté pero no lo
+  toqué porque cambia la composición; decime si lo bajamos de peso o lo sacamos.
+- **El placeholder a 320px se corta igual** (196px disponibles contra 263px del
+  texto). Con ese copy no entra en un iPhone SE; a 375px entra entero. Si
+  querés, se puede acortar el copy en mobile.
+- `next dev` reescribe `tsconfig.json` con un formato que `oxfmt` rechaza —
+  loop preexistente, no de esta pasada.

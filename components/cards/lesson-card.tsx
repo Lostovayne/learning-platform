@@ -25,7 +25,7 @@ export function LessonCard(props: LessonCardProps) {
   return (
     <article
       className={cn(
-        "flex flex-col rounded-md border border-neutral-200 bg-white p-4 transition-shadow hover:shadow-sm",
+        "flex flex-col rounded-md border border-neutral-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md",
         props.className,
       )}
     >
@@ -40,13 +40,13 @@ export function LessonCard(props: LessonCardProps) {
       <p className="mt-1 flex-1 text-small text-neutral-500">
         {props.description}
       </p>
-      <div className="mt-4 flex items-center justify-between gap-3 text-small [&>*]:whitespace-nowrap">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 text-small">
         {props.variant === "video" ? (
           <>
-            <span className="text-neutral-500">
+            <span className="whitespace-nowrap text-neutral-500">
               {props.lessonNumber} · {props.duration}
             </span>
-            <span className="inline-flex items-center gap-1.5 text-primary-500">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-primary-700">
               <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-primary-500">
                 <svg
                   viewBox="0 0 10 10"
@@ -61,8 +61,10 @@ export function LessonCard(props: LessonCardProps) {
           </>
         ) : (
           <>
-            <span className="text-neutral-500">{props.module}</span>
-            <span className="inline-flex items-center gap-1.5 font-medium text-primary-500">
+            <span className="whitespace-nowrap text-neutral-500">
+              {props.module}
+            </span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-medium text-primary-700">
               View lesson
               <ExternalLink className="h-3 w-3" aria-hidden="true" />
             </span>

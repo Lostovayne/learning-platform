@@ -19,7 +19,7 @@ function nowPlayingIcon(): ReactNode {
 }
 
 const icons: Record<StatusVariant, ReactNode> = {
-  "in-progress": <LoaderCircle className="h-4 w-4 text-primary-500" />,
+  "in-progress": <LoaderCircle className="h-4 w-4 text-primary-600" />,
   completed: <CircleCheck className="h-4 w-4 text-success" strokeWidth={2} />,
   "now-playing": nowPlayingIcon(),
   locked: <Lock className="h-4 w-4 text-neutral-500" />,

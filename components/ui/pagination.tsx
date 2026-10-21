@@ -7,17 +7,23 @@ export interface PaginationProps {
   className?: string;
 }
 
+const pageButtonClasses =
+  "grid h-10 w-10 place-items-center rounded-md transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 md:h-9 md:w-9";
+
 export function Pagination({ pages, current = 1, className }: PaginationProps) {
   return (
     <nav
       aria-label="Pagination"
-      className={cn("flex items-center gap-1 text-body", className)}
+      className={cn("flex flex-wrap items-center gap-1 text-body", className)}
     >
       <button
         type="button"
         aria-label="Previous page"
         disabled={current === 1}
-        className="grid h-9 w-9 place-items-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-100 disabled:pointer-events-none disabled:opacity-50"
+        className={cn(
+          pageButtonClasses,
+          "text-neutral-500 hover:bg-neutral-100 disabled:pointer-events-none disabled:opacity-50",
+        )}
       >
         <ChevronLeft className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -25,7 +31,7 @@ export function Pagination({ pages, current = 1, className }: PaginationProps) {
         page === "ellipsis" ? (
           <span
             key={`ellipsis-${index}`}
-            className="px-2 text-neutral-500"
+            className="px-1 text-neutral-500"
             aria-hidden="true"
           >
             …
@@ -36,9 +42,9 @@ export function Pagination({ pages, current = 1, className }: PaginationProps) {
             type="button"
             aria-current={page === current ? "page" : undefined}
             className={cn(
-              "grid h-9 w-9 place-items-center rounded-md transition-colors",
+              pageButtonClasses,
               page === current
-                ? "border border-primary-500 text-primary-500"
+                ? "border border-primary-600 text-primary-700"
                 : "text-neutral-700 hover:bg-neutral-100",
             )}
           >
@@ -49,7 +55,10 @@ export function Pagination({ pages, current = 1, className }: PaginationProps) {
       <button
         type="button"
         aria-label="Next page"
-        className="grid h-9 w-9 place-items-center rounded-md text-neutral-500 transition-colors hover:bg-neutral-100"
+        className={cn(
+          pageButtonClasses,
+          "text-neutral-500 hover:bg-neutral-100",
+        )}
       >
         <ChevronRight className="h-4 w-4" aria-hidden="true" />
       </button>

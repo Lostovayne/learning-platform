@@ -6,17 +6,22 @@
   --font-display: var(--font-playfair-display), ui-serif, Georgia, serif;
 
   /* --------------------------------- Primary -------------------------------- */
-  --color-primary-600: #ea580c;
-  --color-primary-500: #f97316;
-  --color-primary-400: #fb923c;
-  --color-primary-300: #fda374;
-  --color-primary-200: #fed7aa;
-  --color-primary-100: #fee9de;
+  /* Brand terracotta ramp. 500 is the reference brand color: decorative
+     fills, logo mark, borders, focus ring. 600 is the solid action fill
+     (white text 4.63:1). 700 is the text role on light surfaces (6.45:1). */
+  --color-primary-800: #7d2c0e;
+  --color-primary-700: #a13f1d;
+  --color-primary-600: #c2522a;
+  --color-primary-500: #e46c46;
+  --color-primary-400: #ec8760;
+  --color-primary-300: #f2a983;
+  --color-primary-200: #f7d0bd;
+  --color-primary-100: #fbe6dc;
 
   /* --------------------------------- Neutral -------------------------------- */
   --color-neutral-900: #0f172a;
   --color-neutral-700: #334155;
-  --color-neutral-500: #64748b;
+  --color-neutral-500: #5d6b83;
   --color-neutral-300: #cbd5e1;
   --color-neutral-200: #e2e8f0;
   --color-neutral-100: #f1f5f9;
@@ -26,16 +31,24 @@
   /* --------------------------------- Semantic -------------------------------- */
   --color-canvas: #f9f5f2;
   --color-header-panel: #fbf6f2;
-  --color-panel-border: #f0e9e4;
+  --color-panel-border: #e6d8cd;
+  --color-hatch-line: #f2e6de;
   --color-background: #ffffff;
   --color-foreground: #0f172a;
   --color-muted: #f1f5f9;
-  --color-muted-foreground: #64748b;
+  --color-muted-foreground: #5d6b83;
   --color-border: #e2e8f0;
   --color-success: #22c55e;
   --color-lesson: #4f46e5;
   --color-lesson-background: #f1f0f7;
   --color-spacing-swatch: #f8ccaf;
+
+  /* ------------------------------- Breakpoints ------------------------------ */
+  /* The width where the design board's button panel can hold four real
+     buttons side by side. It has to be a named breakpoint: an arbitrary
+     `min-[1400px]:` variant is emitted before the named ones in the
+     stylesheet, so it loses the cascade to `sm:`. */
+  --breakpoint-wide: 87.5rem;
 
   /* -------------------------------- Type scale ------------------------------- */
   --text-display-1: 3rem;
@@ -73,7 +86,6 @@
   body {
     @apply bg-canvas text-foreground font-sans antialiased;
   }
-
   ::-webkit-scrollbar {
     width: 6px;
     height: 8px;
@@ -91,4 +103,23 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-neutral-300);
   }
+}
+
+/**
+ * Hatched page edge.
+ *
+ * The page sits on a "paper" sheet; the strip left and right of it carries a
+ * fine diagonal hatch. The gradient runs at 135deg so the lines fall from
+ * bottom-left to top-right, with an 8px step along the axis — that is a
+ * horizontal period of 8 * sqrt(2) = 11.3px and a 1.7px line, matching the
+ * reference sheet. The sheet itself is painted over this background, so only
+ * the margins show the hatch.
+ */
+@utility hatch-edge {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 6.8px,
+    var(--color-hatch-line) 6.8px 8px
+  );
 }
