@@ -6,8 +6,16 @@ import { Button } from "@/components/ui/button";
 import { pageGutter, pageSheet, pageWidth } from "@/lib/layout";
 
 /**
- * Decorative strip of blurred gradient bars at the end of the page, matching
- * the reference footer silhouette. Purely visual.
+ * Decorative strip of gradient bars at the end of the page. Purely visual.
+ *
+ * Measured off the reference sheet (`design/vertex-home.png`, 1024px wide).
+ * The strip is 183px tall there and holds 14 bars with crisp vertical
+ * edges — there is no blur on them. Each bar carries its own vertical
+ * gradient: transparent at the top, #FDAE92 at 55% of its height, and a
+ * pale salmon again at the bottom edge. Two of them (the pale one at 18%
+ * and the last one at 90%) are a lighter layer that fades out at both ends
+ * and stops short of the baseline, and a 104px gap splits the strip into
+ * two groups.
  *
  * Horizontal geometry is a percentage of the strip, so the bars keep their
  * proportion and can never run past the right edge. Vertical geometry is a
@@ -15,42 +23,40 @@ import { pageGutter, pageSheet, pageWidth } from "@/lib/layout";
  * the silhouette holds its shape from 320px to ultrawide.
  */
 const footerBars = [
-  { left: 2.5, width: 4.3, height: 38.6 },
-  { left: 8, width: 4.7, height: 57.8 },
-  { left: 14, width: 4.5, height: 59.0 },
-  { left: 20, width: 5.1, height: 88.0 },
-  { left: 26, width: 4.7, height: 60.2 },
-  { left: 32, width: 4.3, height: 56.6 },
-  { left: 38, width: 3.9, height: 36.1 },
-  { left: 46, width: 3.7, height: 24.1 },
-  { left: 51, width: 3.9, height: 28.9 },
-  { left: 56, width: 3.5, height: 20.5 },
-  { left: 63, width: 3.9, height: 33.7 },
-  { left: 68, width: 4.3, height: 57.8 },
-  { left: 73.5, width: 5.1, height: 90.4 },
-  { left: 80, width: 4.3, height: 59.0 },
-  { left: 85, width: 4.1, height: 57.8 },
-  { left: 89.5, width: 5.1, height: 90.4 },
-  { left: 95, width: 3.9, height: 62.7 },
+  { left: 0, top: 54.3, width: 7.5, height: 45.1 },
+  { left: 7.5, top: 36.4, width: 6.1, height: 63.0 },
+  { left: 13.6, top: 18.5, width: 4.3, height: 81.0 },
+  { left: 17.8, top: 6.5, width: 5.9, height: 80.4, pale: true },
+  { left: 23.8, top: 30.4, width: 9.3, height: 69.0 },
+  { left: 33.1, top: 50.0, width: 5.3, height: 49.5 },
+  { left: 49.2, top: 70.7, width: 2.9, height: 28.8 },
+  { left: 52.1, top: 57.6, width: 8.8, height: 41.8 },
+  { left: 60.9, top: 40.2, width: 8.2, height: 59.2 },
+  { left: 69.1, top: 20.7, width: 5.1, height: 78.8 },
+  { left: 74.2, top: 4.3, width: 6.5, height: 95.1 },
+  { left: 80.7, top: 51.1, width: 5.2, height: 48.4 },
+  { left: 85.9, top: 31.0, width: 3.9, height: 68.5 },
+  { left: 89.8, top: 10.9, width: 10.2, height: 81.0, pale: true },
 ] as const;
 
 function FooterBars() {
   return (
     <div
       aria-hidden="true"
-      className="relative mt-[54px] h-[clamp(96px,16vw,166px)] w-full overflow-hidden"
+      className="relative mt-[54px] h-[clamp(96px,18vw,190px)] w-full overflow-hidden"
     >
       {footerBars.map((bar, index) => (
         <div
           key={index}
-          className="absolute bottom-0 blur-[8px]"
+          className="absolute"
           style={{
             left: `${bar.left}%`,
+            top: `${bar.top}%`,
             width: `${bar.width}%`,
             height: `${bar.height}%`,
-            opacity: bar.height > 80 ? 1 : bar.height > 50 ? 0.9 : 0.8,
-            background:
-              "linear-gradient(to bottom, rgba(251,178,148,0) 0%, rgba(250,170,134,0.6) 12%, #FDAE92 30%, #FBD8CB 100%)",
+            background: "pale" in bar
+              ? "linear-gradient(to bottom, rgba(253,174,146,0) 0%, rgba(253,174,146,0.35) 15%, rgba(253,174,146,0.86) 49%, rgba(253,174,146,0.15) 100%)"
+              : "linear-gradient(to bottom, rgba(253,174,146,0) 0%, rgba(253,174,146,0.4) 14%, #FDAE92 55%, rgba(253,174,146,0.78) 100%)",
           }}
         />
       ))}

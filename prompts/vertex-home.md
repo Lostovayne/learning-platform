@@ -256,6 +256,30 @@ Measured against the newer reference sheet the user supplied, not against the
 Verified: `tsc --noEmit` clean, `oxlint` reports no new findings, 0px of
 horizontal overflow and 0 clipped elements at 375px and 1024px.
 
+### Adjusted (2026-10-21): footer bar chart rebuilt from the reference
+
+The footer strip was a set of blurred gradient blobs. The reference sheet
+(`design/vertex-home.png`, 1024px wide) has no blur on them at all: they are
+crisp vertical bars, and the rhythm is different.
+
+Measured off the reference and rebuilt to match:
+
+- **14 bars, not 19**, with the exact x/width/top/height of the reference:
+  the rendered DOM lands within 1px of every bar in the reference sheet.
+- **No blur.** The `blur-[8px]` is gone; the reference's bar edges are hard
+  with a single pixel of antialiasing.
+- **Each bar carries its own vertical gradient**: transparent at the top,
+  #FDAE92 at 55% of its height, and a pale salmon again at the bottom edge.
+  The rendered profile matches the reference within 5/255 of the green
+  channel at every tenth of the bar.
+- **Two bars are a paler layer** (the one at 18% and the last one at 90%):
+  they peak at 86% opacity, fade back out at the bottom and stop short of
+  the baseline.
+- **A 104px gap splits the strip** into two groups; the old version had a
+  shallow dip instead.
+- The strip is 183px tall at 1024px, so it is now
+  `h-[clamp(96px,18vw,190px)]` (was `16vw`/`166px`).
+
 ### Adjusted (2026-10-21): the hatched band stops swallowing the desktop
 
 The band of hatch on each side of the paper was a leftover of the sheet's
