@@ -256,6 +256,46 @@ Measured against the newer reference sheet the user supplied, not against the
 Verified: `tsc --noEmit` clean, `oxlint` reports no new findings, 0px of
 horizontal overflow and 0 clipped elements at 375px and 1024px.
 
+### Adjusted (2026-10-21): the hatched band stops swallowing the desktop
+
+The band of hatch on each side of the paper was a leftover of the sheet's
+max width, so it grew with the viewport: 85px on a 1400px screen, 153px at
+2xl and 345px at 1920. It is a frame, not a margin, so it now stays one.
+
+- **`xl` to `2xl`** — the sheet is capped at 1290px and the band is
+  `clamp(30px, calc(50vw - 645px), 123px)`, i.e. `(100vw - 1290px) / 2`
+  capped at both ends. At 1400px the band is 55px (was 85), at 1536px it
+  is 123px, which is 20% less than the 153px it used to be.
+- **`2xl` and up** — the sheet grows with the viewport again
+  (`2xl:max-w-none`) and the band is pinned at 123px, so an ultrawide
+  monitor widens the paper instead of the margins: 123px at 1920 (was
+  345px) and 123px at 2560 (was 615px).
+- The `clamp` floor of 30px keeps the band continuous across the `xl`
+  breakpoint, where the `md` band is also 30px.
+
+Verified: the band measures 30px at 1280, 55px at 1400, 123px at 1536 and
+1920, and 123px at 2560, with 0px of horizontal overflow at 2560.
+
+### Adjusted (2026-10-21): vertical edges on the paper
+
+The page draws its structure in lines: the rule under the navbar, the border
+of the search field, the rules between the sections. The paper sheet had no
+vertical counterpart, so the sides of the page read as an unfinished edge.
+
+- The sheet now carries `border-x-2 border-panel-border`: a 2px vertical
+  rule in the same soft tone as the other lines, one step wider than the 1px
+  rules, running the full height of the paper and meeting the rule under
+  the navbar at both corners.
+- **The `rounded-t-[20px]` on the sheet is gone.** The reference sheet is
+  square at the top — in `design/vertex-home.png` the canvas already starts
+  at x=30 on row 0 — and the radius was also what stopped the vertical
+  rules from reaching the top of the page.
+
+Verified: the border pixels read `#E6D8CD` at x=55..56 on row 0 and on
+rows 200, 500 and 800, so the rule is continuous from the top of the
+viewport to the bottom of the paper. 0px of horizontal overflow and 0
+clipped elements at 375px.
+
 ### Open
 
 - **"View all courses" apunta a `href="#"`**, igual que los links del header y

@@ -166,7 +166,7 @@ export default function Home() {
   return (
     <div className="hatch-edge min-h-screen">
       <div
-        className={`flex min-h-screen flex-col rounded-t-[20px] bg-canvas ${pageSheet}`}
+        className={`flex min-h-screen flex-col border-x-2 border-panel-border bg-canvas ${pageSheet}`}
       >
         <SiteHeader />
         <main className="flex-1">
