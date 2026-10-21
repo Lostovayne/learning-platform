@@ -10,13 +10,18 @@
  * the reference sheet at a 1024px viewport: the sheet runs from x=30 to
  * x=994 and the content column from x=82 to x=938, so the desktop gutter
  * inside the sheet is 52px. The mobile gutter keeps the content at x=32.
+ *
+ * From `xl` up the sheet stops growing: it is capped and centred, so the
+ * hatched band on both sides widens with the viewport instead of the paper
+ * running edge to edge. The content column inside it is not capped, so it
+ * always reaches the sheet's own edges.
  */
 
-/** Max content width of the product pages. */
-export const pageWidth = "w-full max-w-[1024px]";
+/** Content column of the product pages: it fills the sheet minus the gutter. */
+export const pageWidth = "w-full";
 
 /** Horizontal gutter, identical on every product surface. */
 export const pageGutter = "px-[22px] md:px-[52px]";
 
 /** Inset of the paper sheet from the viewport edges, where the hatch shows. */
-export const pageSheet = "mx-[10px] md:mx-[30px]";
+export const pageSheet = "mx-[10px] md:mx-[30px] xl:mx-auto xl:max-w-[1230px]";

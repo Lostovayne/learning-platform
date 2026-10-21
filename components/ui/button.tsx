@@ -20,7 +20,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 const sizeClasses: Record<ButtonSize, string> = {
   lg: "h-11 px-4 text-body-lg font-medium",
   md: "h-11 px-3 text-body font-medium",
-  hero: "h-12 px-6 text-[19px] font-medium md:h-[58px] md:px-8",
+  hero: "h-12 px-4 text-body-lg font-normal",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

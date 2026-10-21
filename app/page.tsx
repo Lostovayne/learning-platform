@@ -190,7 +190,7 @@ export default function Home() {
               <div className="mt-7 flex justify-center md:mt-10">
                 <Button variant="brand" size="hero">
                   Explore Courses
-                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
               <div className="relative mx-auto mt-8 max-w-[748px] md:mt-11">

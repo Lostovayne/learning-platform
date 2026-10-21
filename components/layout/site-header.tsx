@@ -48,7 +48,7 @@ export function SiteHeader() {
               <SignInButton mode="modal">
                 <button
                   type="button"
-                  className="inline-flex h-11 items-center rounded-md px-3 text-body font-medium text-primary-700 transition-colors hover:bg-primary-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  className="inline-flex h-11 w-[70px] items-center justify-center rounded-md px-2 text-body font-medium text-primary-700 transition-colors hover:bg-primary-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                 >
                   Sign In
                 </button>
@@ -56,7 +56,7 @@ export function SiteHeader() {
               <SignUpButton mode="modal">
                 <button
                   type="button"
-                  className="inline-flex h-11 items-center justify-center rounded-md bg-primary-500 px-4 text-body-lg font-normal text-white transition-colors hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  className="inline-flex h-11 w-[70px] items-center justify-center rounded-md bg-primary-500 px-2 text-body font-normal text-white transition-colors hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                 >
                   Sign Up
                 </button>

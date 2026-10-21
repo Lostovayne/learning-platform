@@ -227,6 +227,35 @@ was removed with its last reference.
 - The last truncated swatch label ("Primary 800 · hover" at 1024px) now
   splits its role into a third line instead of clipping.
 
+### Adjusted (2026-10-21): sheet inset, hatched band, CTA typography
+
+Measured against the newer reference sheet the user supplied, not against the
+1024px crop in `design/vertex-home.png`.
+
+- **The sheet no longer runs edge to edge.** `pageSheet` went from
+  `mx-[30px]` to `mx-[30px] xl:mx-auto xl:max-w-[1230px]`: below `xl` the
+  sheet keeps its 30px inset (the 1024px reference is untouched), and from
+  `xl` up it is capped and centred, so the hatched band on both sides widens
+  with the viewport instead of the paper filling it. At 1440px the band is
+  105px per side.
+- **The content column reaches the sheet's own edges.** `pageWidth` lost its
+  `max-w-[1024px]` cap and is now `w-full`, so the header, the hero and the
+  catalog all run to the sheet border minus the 52px gutter. At 1024px
+  nothing changes (the sheet is 961px there, so the old cap never bound);
+  at 1440px the content column is 1126px wide and the logo starts at x=155.
+- **The hatch lines are thicker**: the repeating gradient goes from a 1.2px
+  line every 8px to a 2px line every 10px.
+- **The "Explore Courses" CTA was too heavy and too large.** It was 18px
+  medium in a 58px-tall box (233px wide) with a 20px arrow. It is now 16px
+  **regular** weight in a 48px box with a 16px arrow: **180×48**. The
+  `hero` size of `components/ui/button.tsx` is
+  `h-12 px-4 text-body-lg font-normal`.
+- The `Sign Up` button of the header, which mirrors the CTA style, follows
+  the same typography: 16px regular, `h-11`, `px-4` → 92×44.
+
+Verified: `tsc --noEmit` clean, `oxlint` reports no new findings, 0px of
+horizontal overflow and 0 clipped elements at 375px and 1024px.
+
 ### Open
 
 - **"View all courses" apunta a `href="#"`**, igual que los links del header y
