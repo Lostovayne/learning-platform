@@ -111,10 +111,21 @@ function NextLogoTile() {
   );
 }
 
+/**
+ * Docker whale on a transparent tile — the card's own white surface is the
+ * background, exactly as the reference shows. Next.js and TypeScript get a
+ * filled tile because their marks have no field of their own; the whale
+ * carries its own blue, so boxing it in dark would contradict the design.
+ *
+ * Sized by width, not height: the mark's viewBox is 696x544 (~1.28:1), so
+ * `h-[58px]` rendered it 74px wide and pushed it 2px past the 72px box. A
+ * 64px width lands on the same 4px inset Next uses at every breakpoint, and
+ * leaves the taller vertical room a wide mark needs.
+ */
 function DockerLogoTile() {
   return (
     <span className="grid h-14 w-14 shrink-0 place-items-center md:h-16 md:w-16 lg:h-[72px] lg:w-[72px]">
-      <DockerWhale className="h-11 w-auto max-w-none md:h-12 lg:h-[58px]" />
+      <DockerWhale className="h-auto w-12 md:w-14 lg:w-16" />
     </span>
   );
 }

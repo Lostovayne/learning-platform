@@ -123,3 +123,90 @@
     var(--color-hatch-line) 8px 10px
   );
 }
+
+/* --------------------------------------------------------------------------
+ * Clerk modal
+ *
+ * `appearance.elements` is measured to lose on three things: font-size never
+ * applies anywhere, `h-11` does not reach the input, and the card ignores its
+ * border class. Clerk writes all three from its own stylesheet, so the
+ * overrides live here — this is also the only place a breakpoint fits, which
+ * `appearance` cannot express at all.
+ *
+ * The block stays outside `@layer` on purpose: layered rules lose to
+ * unlayered ones regardless of specificity. Where the rules are marked
+ * `!important`, each one says which Clerk declaration forced it; nothing else
+ * in this block carries it.
+ *
+ * Values are the design system's own specs — "Field Specs" for the input,
+ * "Panel" for the card, the button spec for the social buttons, typeScale for
+ * the title.
+ * ------------------------------------------------------------------------ */
+
+/* Field Specs: "Height: 44px". Clerk never declares `height` on the input —
+   it declares `max-height: 2.25rem` (36px) from an internal class, which
+   clamps our value no matter how important it is, because `max-height` and
+   `height` are different properties. So both are pinned.
+
+   `!important` is deliberate and scoped to the control: an author `!important`
+   outranks a normal author rule regardless of the other selector's
+   specificity, which is the only reliable lever against a stylesheet we do
+   not own and that re-derives its scale on every Clerk release. */
+body .cl-formFieldInput {
+  height: 44px !important;
+  max-height: 44px !important;
+}
+
+/* Field Specs: "Font: 16px below 640px, 14px above, so iOS never zooms".
+   The breakpoint is the part `appearance` cannot express: an input under 16px
+   makes Safari focus-zoom the viewport, which breaks the modal on a phone. */
+body .cl-formFieldInput {
+  font-size: 14px;
+}
+
+@media (max-width: 639px) {
+  body .cl-formFieldInput {
+    font-size: 16px;
+  }
+}
+
+/* Panel spec is `border border-panel-border` — a solid #e6d8cd hairline.
+   Clerk paints --color-border at 11% alpha instead, which reads as no border
+   at all. The radius needs no rule: `variables.borderRadius` already lands the
+   card on `xl` = 16px, the `rounded-lg` the Panel uses. */
+body .cl-card {
+  border: 1px solid var(--color-panel-border);
+}
+
+/* Field Specs: "Border: 1px solid #E2E8F0". Clerk zeroes the border and
+   redraws the same 1px edge as a `box-shadow` ring at 11% alpha
+   (`color-mix(transparent 89%, #e2e8f0 11%)`), which renders as no border at
+   all — so the ring is corrected, not added, and it lands exactly where
+   Clerk's own `border-width: 0` leaves the edge. It needs `!important` because
+   Clerk draws it from `[data-variant="default"]`, a (0,2,0) selector. Focus is
+   excluded so Clerk keeps owning its own focus treatment. */
+body .cl-formFieldInput:not(:focus) {
+  box-shadow: 0 0 0 1px var(--color-border) !important;
+}
+
+/* Button spec: "Height: 44px (lg and md)". Clerk's social buttons land on 33px
+   and draw their edge at 7% alpha, so the same two corrections as the field:
+   the height is clamped by `max-height`, and the ring is drawn from
+   `[data-variant]` — both need `!important`. Radius and font already comply
+   (12px, 14px medium) and are left alone. */
+body .cl-socialButtonsBlockButton {
+  height: 44px !important;
+  max-height: 44px !important;
+}
+
+body .cl-socialButtonsBlockButton:not(:focus) {
+  box-shadow: 0 0 0 1px var(--color-border) !important;
+}
+
+/* Type scale: heading-3 is 1.125rem. Clerk computes 17px from its own scale.
+   Weight is left alone — the design system does not pin a weight for
+   heading-3, so there is nothing here to be inconsistent with. */
+body .cl-headerTitle {
+  font-size: var(--text-heading-3);
+  line-height: var(--text-heading-3--line-height);
+}

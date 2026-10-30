@@ -22,10 +22,12 @@ export function SiteHeader() {
             aria-label="Vertex home"
             className="rounded-xs focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-600"
           >
-            <Logo
-              markClassName="h-[30px] w-[30px]"
-              titleClassName="text-[1.3125rem] font-bold text-black"
-            />
+            {/* The mark and wordmark take the component defaults (28px mark,
+                18px `text-heading-3` wordmark), so the header logo is the same
+                object the design system shows as its specimen instead of a
+                private 30px/21px variant. It also reclaims ~11px of horizontal
+                room, which is what the 320px header was missing. */}
+            <Logo />
           </Link>
           <nav
             className="hidden items-center gap-6 whitespace-nowrap md:flex md:gap-12"
@@ -56,7 +58,7 @@ export function SiteHeader() {
               <SignUpButton mode="modal">
                 <button
                   type="button"
-                  className="inline-flex h-11 w-[70px] items-center justify-center rounded-md bg-primary-500 px-2 text-body font-normal text-white transition-colors hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
+                  className="inline-flex h-11 w-[70px] items-center justify-center rounded-md bg-primary-500 px-2 text-body font-medium text-white transition-colors hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"
                 >
                   Sign Up
                 </button>
