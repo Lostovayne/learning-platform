@@ -1,95 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vertex
 
-## Getting Started
+Vertex is an AI-powered learning platform: authors publish courses in Sanity, and a Next.js site serves them to learners. Its differentiator is search — a plain-language query returns ranked, clickable cards that link straight to the exact second in a lesson video where the topic is taught, with playback on the site.
 
-First, run the development server:
+This repository is the **web workspace** (Next.js). The Sanity Studio is a separate workspace.
+
+## Stack
+
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript (strict)
+- **Auth:** Clerk (`@clerk/nextjs`)
+- **Content:** Sanity (private dataset, server-side reads)
+- **Styling:** Tailwind CSS v4, `oxfmt`/`oxlint` (oxc toolchain)
+- **Analytics:** PostHog (planned)
+- **Runtime/package manager:** Bun
+
+## Prerequisites
+
+- [Bun](https://bun.sh) 1.4+
+- Node.js 20+ (for tooling compatibility)
+- A Clerk application (publishable + secret keys)
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+cp .env.local.example .env.local   # create if not present; see "Environment"
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> Note: there is no `.env.example` committed yet. Create `.env.local` with the variables listed below.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+Variables are read server-side unless prefixed with `NEXT_PUBLIC_`. Never commit real secrets.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Tooling
-
-Linting and formatting run on the [oxc](https://oxc.rs) toolchain, so both come
-from the same family of tools and neither needs a plugin stack to install.
-
-```bash
-npm run lint          # oxlint -- the linter
-npm run lint:fix      # oxlint --fix
-npm run test:lint     # guard the deliberate rules against a fixture that must fail them
-npm run format        # oxfmt -- the formatter
-npm run format:check  # verify formatting without writing
+```env
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 ```
 
-- **oxlint replaced ESLint.** `.oxlintrc.json` was produced with oxc's own
-  migration tool, run against the flat config before ESLint was removed
-  (`npx @oxlint/migrate eslint.config.mjs --with-nursery`). `eslint.config.mjs`
-  and the `eslint` / `eslint-config-next` dependencies are gone.
-- **The rule set stays at 1:1 parity with ESLint.** The old setup resolved 113
-  rules, 86 of them active (60 errors, 26 warnings); oxlint enforces 81 of those
-  86, and 5 could not be migrated. `"categories": { "correctness": "off" }` stops
-  oxlint from adding its own defaults, so `npm run lint` reports exactly what
-  ESLint used to report. Remove that line to also enable oxlint's built-in
-  `correctness` baseline.
-- **Five ESLint rules had no oxlint equivalent** and are no longer enforced:
-  `nextjs/no-location-assign-relative-destination` (not implemented upstream,
-  `oxc-project/oxc` #26301 is open), `react/jsx-uses-react` and
-  `react/jsx-uses-vars` (obsolete with the React 17+ JSX transform, the latter
-  covered by `no-unused-vars`), and the React Compiler rules
-  `react-hooks/config` and `react-hooks/gating`. `react/no-deprecated` is not
-  lost: it runs as `typescript/no-deprecated`, its type-aware equivalent, which
-  is why `options.typeAware` is on and `oxlint-tsgolint` is a devDependency. The
-  details live in a comment at the top of `.oxlintrc.json`.
-- **Rules beyond the ESLint parity set** are deliberate and listed here:
-  `no-restricted-properties` rejects any `.reload()` call, so Client Components
-  navigate with `useRouter().push()` instead of a full page reload — nothing in
-  the ESLint config covered `location.reload()`. Seven more close gaps that set
-  left open: `typescript/no-floating-promises` (error) and
-  `typescript/no-misused-promises` (warn) catch unhandled promises,
-  `react/button-has-type` (error), `react/jsx-no-script-url` (error) and
-  `react/iframe-missing-sandbox` (warn) cover missing button types,
-  `javascript:` URLs and unsandboxed frames, and
-  `jsx-a11y/label-has-associated-control` (error) together with
-  `jsx-a11y/anchor-is-valid` (warn) cover form labels and real links. Each one
-  is fixture-verified on its own, and none of them flags this project's code.
-- **`npm run test:lint` guards those deliberate rules.** It lints a fixture
-  written outside the repo that has to fail every one of them, so a rule
-  disappearing silently from `.oxlintrc.json` fails the check instead of passing
-  unnoticed. The project still has no application test runner; this script is
-  the only committed test until one arrives.
-- **oxfmt replaced Prettier**, which this project never actually used.
-  `.oxfmtrc.json` pins `printWidth` to 80 to match the existing style, and
-  `.editorconfig` holds the 2-space indentation standard that both tools read.
-- Vendored skill content and generated artifacts (`.agents/**`, `agent/**`,
-  `.atl/**`) are excluded from both tools, so upstream third-party code is never
-  linted or reformatted. The lint config also keeps the ignores the ESLint setup
-  declared (`.next/**`, `out/**`, `build/**`, `next-env.d.ts`). Without the
-  vendored excludes oxlint would scan 121 files instead of the 4 that belong to
-  this project.
+Sanity, PostHog and the search (Context MCP) variables will be added as those features land. Keep `.env.local` out of version control (it is gitignored).
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Command           | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| `bun dev`         | Start the dev server (Turbopack)                  |
+| `bun run build`   | Production build                                 |
+| `bun start`       | Serve the production build                       |
+| `bun run lint`    | Lint with oxlint                                 |
+| `bun run lint:fix`| Apply oxlint fixes                               |
+| `bun run format`  | Format with oxfmt                                |
+| `bun run format:check` | Verify formatting without writing            |
+| `bun run test:lint`| Guard the deliberate lint rules against a fixture |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Type-check: `bunx tsc --noEmit`.
+
+## Project structure
+
+```
+app/                  # App Router routes, layouts, global styles
+  design-system/      # Design-token reference page
+  globals.css         # Global styles + Clerk overrides
+  layout.tsx          # Root layout, fonts, ClerkProvider
+  page.tsx            # Home
+components/
+  cards/              # Course/lesson/resource cards
+  layout/             # Site header, etc.
+  ui/                 # Reusable UI primitives
+lib/                  # Shared helpers
+scripts/              # Repo tooling (lint rule regression)
+design/               # Design artboards (gentle-design), not production code
+odd/                  # ODD task tracking for large features
+prompts/              # Approved implementation prompts
+```
+
+## Conventions
+
+- **Server/client boundary:** pages are read-only and render stored data. Any write (e.g. progress) goes through a server route. The browser holds no tokens and never calls the MCP or the LLM.
+- **Tokens stay server-side:** Sanity read token, Clerk secret key, and any write token are server-only. Only client-safe values reach the browser.
+- **Path alias:** `@/*` maps to the repo root.
+- **Styling:** reuse existing Tailwind patterns and `components/ui` before adding new ones. Do not restyle beyond the provided references.
+- **Linting/formatting:** oxc toolchain (`oxlint` + `oxfmt`). Vendored skill content and generated artifacts (`.agents/**`, `agent/**`, `.atl/**`) are excluded.
+
+## Tooling notes
+
+- `oxlint` replaced ESLint with 1:1 rule parity (81 of 86 active rules). Five rules had no oxlint equivalent and are documented in `.oxlintrc.json`.
+- `oxfmt` replaced Prettier; `.oxfmtrc.json` pins `printWidth` to 80.
+- `bun run test:lint` lints a fixture that must fail every deliberate rule, so a rule disappearing silently fails the check.
+- The project has no application test runner yet; `test:lint` is the only committed test.
+
+## Deployment
+
+Built for [Vercel](https://vercel.com). Run `bun run build` locally before pushing; the production build must pass. Keep environment variables configured in the Vercel project settings (never in the repo).
+
+## License
+
+Private — all rights reserved.
