@@ -85,18 +85,6 @@
       "skillPath": "skills/portable-text-serialization/SKILL.md",
       "computedHash": "a4cec92378298c8ef502bf9698112f054d86fc03e814257fa07d6aaac12b9376"
     },
-    "sanity-best-practices": {
-      "source": "sanity-io/agent-toolkit",
-      "sourceType": "github",
-      "skillPath": "skills/sanity-best-practices/SKILL.md",
-      "computedHash": "1462e9fc9dd04e1bc7296c3aa3e836749f9b62408c7acf3632a7e996afecd538"
-    },
-    "sanity-migration": {
-      "source": "sanity-io/agent-toolkit",
-      "sourceType": "github",
-      "skillPath": "skills/sanity-migration/SKILL.md",
-      "computedHash": "b265ef004ade84f27a083e54bf3798242edf87c677fe2852b6ced4bd38517e0f"
-    },
     "sanity-singletons": {
       "source": "sanity-io/agent-toolkit",
       "sourceType": "github",
