@@ -1,5 +1,5 @@
 export const apiVersion =
-  process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-10-30";
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-11-02";
 
 export const dataset = assertValue(
   process.env.NEXT_PUBLIC_SANITY_DATASET,
